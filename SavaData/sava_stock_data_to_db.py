@@ -61,6 +61,7 @@ def check_and_create_table():
 def read_stock_list():
     """
     读取股票列表CSV文件,返回包含股票代码和名称的列表。
+    返回列是['代码', '名称']
     """
     file_path = os.path.join(r"../", STOCK_LIST_CACHE)
     try:
@@ -105,15 +106,7 @@ def write_stock_data_to_db():
                         (code, date, open, high, low, close, volume, amount, outstanding_share, turnover)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT (code, date) 
-                        DO UPDATE SET
-                            open = EXCLUDED.open,
-                            high = EXCLUDED.high,
-                            low = EXCLUDED.low,
-                            close = EXCLUDED.close,
-                            volume = EXCLUDED.volume,
-                            amount = EXCLUDED.amount,
-                            outstanding_share = EXCLUDED.outstanding_share,
-                            turnover = EXCLUDED.turnover
+                        DO NOTHING
                     """)
 
                     # 执行插入
