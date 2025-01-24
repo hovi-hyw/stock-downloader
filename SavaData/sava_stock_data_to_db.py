@@ -71,11 +71,18 @@ def read_stock_list():
         print(f"读取股票列表文件时出错: {e}")
         return []
 
-def write_stock_data_to_db():
+def write_stock_data_to_db(stock_code=None, stock_name=None):
     """
     读取股票列表,获取每只股票的历史数据,并写入数据库。
+    如果传入 stock_code 和 stock_name，则只处理该股票；否则处理所有股票。
     """
-    stock_list = read_stock_list()
+    if stock_code is None or stock_name is None:
+        # 如果没有传入股票代码和名称，则处理所有股票
+        stock_list = read_stock_list()
+    else:
+        # 如果传入了股票代码和名称，则只处理该股票
+        stock_list = [(stock_code, stock_name)]
+
     conn = None
     cursor = None
 
