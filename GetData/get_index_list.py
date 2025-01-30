@@ -8,7 +8,8 @@ def get_index_list():
         DataFrame: 包含A股市场所有指数的实时行情数据，包括指数代码、名称、最新价、涨跌幅等。
     """
     try:
-        index_data = ak.stock_zh_index_spot_sina()
+        # index_data = ak.stock_zh_index_spot_sina()
+        index_data = ak.stock_zh_index_spot_em(symbol="沪深重要指数")
         return index_data
     except Exception as e:
         print(f"获取指数列表时出错: {e}")

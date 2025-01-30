@@ -1,20 +1,35 @@
+import sys
 from SavaData.save_stock_list_to_csv import save_stock_list_to_csv
 import os
 import pandas as pd
 from Config.config import STOCK_LIST_CACHE, DATABASE_URL
 import psycopg2
-from psycopg2 import sql
+from psycopg2 import sql, pool
 from GetData import get_stock_data
 
-# 检查数据库中表格是否存在，不存在就创建，存在就继续
+# 创建数据库连接池
+connection_pool = psycopg2.pool.SimpleConnectionPool(1, 10, DATABASE_URL)
+
+def get_db_connection():
+    """
+    从连接池中获取数据库连接
+    """
+    return connection_pool.getconn()
+
+def release_db_connection(conn):
+    """
+    释放数据库连接回连接池
+    """
+    connection_pool.putconn(conn)
+
 def check_and_create_table():
     """
     检查 PostgreSQL 数据库中的 stock 库是否存在 stock_daily 表，
     如果不存在则根据指定字段创建表。
     """
+    conn = None
     try:
-        # 连接到 PostgreSQL 数据库
-        conn = psycopg2.connect(DATABASE_URL)
+        conn = get_db_connection()
         cursor = conn.cursor()
 
         # 检查表是否存在
@@ -53,10 +68,9 @@ def check_and_create_table():
     except Exception as e:
         print(f"操作数据库时出错: {e}")
     finally:
-        # 关闭数据库连接
         if conn:
-            cursor.close()
-            conn.close()
+            release_db_connection(conn)
+
 
 def read_stock_list():
     """
@@ -71,7 +85,7 @@ def read_stock_list():
         print(f"读取股票列表文件时出错: {e}")
         return []
 
-def write_stock_data_to_db(stock_code=None, stock_name=None):
+def save_stock_data_to_db(stock_code=None, stock_name=None):
     """
     读取股票列表,获取每只股票的历史数据,并写入数据库。
     如果传入 stock_code 和 stock_name，则只处理该股票；否则处理所有股票。
@@ -93,7 +107,9 @@ def write_stock_data_to_db(stock_code=None, stock_name=None):
         for stock_code, stock_name in stock_list:
             try:
                 # 获取股票历史数据
+                print(f"开始下载 {stock_code} 的数据...")
                 stock_data = get_stock_data(stock_code)
+                print(f"{stock_code} 的数据下载完成。")
 
                 # 获取数据库中该股票最新的日期
                 cursor.execute(
@@ -117,6 +133,7 @@ def write_stock_data_to_db(stock_code=None, stock_name=None):
                     """)
 
                     # 执行插入
+                    print(f"开始插入 {stock_code} 的数据...")
                     data_to_insert = [
                         (stock_code,) + tuple(row) for row in stock_data.itertuples(index=False)
                     ]
@@ -129,6 +146,7 @@ def write_stock_data_to_db(stock_code=None, stock_name=None):
             except Exception as e:
                 print(f"处理 {stock_code} ({stock_name}) 时出错: {e}")
                 conn.rollback()
+                print("rollback成功")
 
     except Exception as e:
         print(f"数据库操作出错: {e}")
@@ -137,6 +155,7 @@ def write_stock_data_to_db(stock_code=None, stock_name=None):
             cursor.close()
         if conn:
             conn.close()
+            print("==========单个线程处理股票数据下载完毕==========")
 
 
 if __name__ == "__main__":
@@ -148,4 +167,6 @@ if __name__ == "__main__":
     read_stock_list()
     # 4. 根据read_stock_list的输出，读取到股票的代码和名称，调用GetData.get_stock_data方法获取股票历史数据，
     # 将 代码+获取的数据 一起写入数据库
-    write_stock_data_to_db()
+    save_stock_data_to_db()
+    print("程序运行完成，退出。")
+    sys.exit(0)  # 显式退出程序

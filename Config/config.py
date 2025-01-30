@@ -1,4 +1,4 @@
-# config/settings.py
+# config/config.py
 
 import os
 from datetime import datetime
@@ -9,7 +9,7 @@ load_dotenv()
 
 # 数据库配置（从环境变量读取敏感信息）
 DATABASE = {
-    'dbname': os.getenv('DB_NAME', 'stock_daily'),
+    'dbname': os.getenv('DB_NAME', 'stock'),
     'user': os.getenv('DB_USER', ''),
     'password': os.getenv('DB_PASSWORD', ''),
     'host': os.getenv('DB_HOST', 'localhost'),
