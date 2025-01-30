@@ -54,8 +54,7 @@ class BatchProcessor:
             stock_data = StockDownloader.get_stock_data(
                 symbol=symbol,
                 start_date="19900101",
-                end_date="20900101",
-                adjust="qfq"
+                end_date="20900101"
             )
             self.data_saver.save_stock_data(stock_data)
         elif data_type == "index":

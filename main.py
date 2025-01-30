@@ -2,11 +2,10 @@ from db.db_manager import DatabaseManager
 from services.save_service import DataSaver
 from services.batch_service import BatchProcessor
 from services.update_service import UpdateService
+from config.config import DATABASE_URL
 import pandas as pd
-import os
 
 # 配置
-DATABASE_URL = "postgresql://user:password@localhost:5432/stock_db"
 STOCK_LIST_FILE = "./data/stock_list.csv"
 
 # 初始化数据库管理器
