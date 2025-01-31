@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     # 加载股票列表
     stock_list = pd.read_csv(STOCK_LIST_FILE)
-    stock_symbols = stock_list['代码'].tolist()
+    stock_symbols = stock_list['code'].tolist()
 
     # 批量下载和保存股票数据
     batch_processor.process_in_batches(symbols=stock_symbols, data_type="stock", batch_size=10, max_workers=3)

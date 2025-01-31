@@ -1,9 +1,9 @@
 import akshare as ak
-from utils.retry_utils import retry
+from utils.retry_utils import retry_config
 
 class ListDownloader:
     @staticmethod
-    @retry(tries=3, delay=1, backoff=2)
+    @retry_config
     def get_stock_list():
         """
         获取所有 A 股股票列表。
@@ -20,7 +20,7 @@ class ListDownloader:
             raise RuntimeError(f"获取股票列表失败: {str(e)}")
 
     @staticmethod
-    @retry(tries=3, delay=1, backoff=2)
+    @retry_config
     def get_index_list():
         """
         获取所有指数列表。

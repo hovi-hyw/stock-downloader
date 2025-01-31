@@ -1,11 +1,11 @@
 import akshare as ak
 import pandas as pd
-from utils.retry_utils import retry
+from utils.retry_utils import retry_config
 
 
 class DataDownloader:
     @staticmethod
-    @retry(tries=3, delay=1, backoff=2)
+    @retry_config
     def download_data(method: str, **kwargs) -> pd.DataFrame:
         """
         通用数据下载方法，支持股票和指数数据。
