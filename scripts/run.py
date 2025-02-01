@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 from datetime import datetime, timedelta
 from src.services.data_fetcher import DataFetcher
@@ -15,6 +17,7 @@ def main():
     index_list = fetcher.fetch_index_list()
 
     # 保存股票和指数列表到 CSV
+    os.makedirs(config.CACHE_PATH, exist_ok=True)
     saver.save_stock_list_to_csv(stock_list, config.STOCK_LIST_CSV)
     saver.save_index_list_to_csv(index_list, config.INDEX_LIST_CSV)
 

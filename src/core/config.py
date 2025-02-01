@@ -20,8 +20,9 @@ class Config:
     DATA_UPDATE_INTERVAL = int(os.getenv("DATA_UPDATE_INTERVAL", 100))
 
     # CSV 文件路径
-    STOCK_LIST_CSV = os.getenv("STOCK_LIST_CSV", "data/stock_list.csv")
-    INDEX_LIST_CSV = os.getenv("INDEX_LIST_CSV", "data/index_list.csv")
+    CACHE_PATH = os.getenv("CACHE_PATH", "")
+    STOCK_LIST_CSV = os.getenv("STOCK_LIST_CSV", "")
+    INDEX_LIST_CSV = os.getenv("INDEX_LIST_CSV", "")
 
 # 实例化配置对象
 config = Config()
