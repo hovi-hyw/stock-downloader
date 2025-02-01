@@ -1,10 +1,9 @@
-from sqlalchemy import Column, String, Float, Date, Integer
-from ..base import Base
+from sqlalchemy import Column, String, Float, Date,  PrimaryKeyConstraint
+from src.database.base import Base
 
 class IndexDailyData(Base):
     __tablename__ = "index_daily_data"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
     symbol = Column(String, nullable=False)  # 指数代码
     date = Column(Date, nullable=False)      # 日期
     open = Column(Float)                     # 开盘价
@@ -17,6 +16,10 @@ class IndexDailyData(Base):
     change_rate = Column(Float)              # 涨跌幅
     change_amount = Column(Float)            # 涨跌额
     turnover_rate = Column(Float)            # 换手率
+
+    __table_args__ = (
+        PrimaryKeyConstraint('symbol', 'date'),
+    )
 
     def __repr__(self):
         return f"<IndexDailyData(symbol={self.symbol}, date={self.date})>"

@@ -1,7 +1,7 @@
 # scripts/init_db.py
-from database.base import Base
-from database.session import engine
-from database.models import stock, index
+from src.database.base import Base
+from src.database.session import engine
+from src.database.models import stock, index
 import logging
 
 logging.basicConfig(level=logging.INFO)

@@ -1,11 +1,22 @@
 import os
 import pandas as pd
 from datetime import datetime
+from sqlalchemy import inspect
 from src.services.data_fetcher import DataFetcher
+from src.database.session import engine
 from src.services.data_saver import DataSaver
 from src.core.config import config
 from src.core.logger import logger
+from scripts.init_db import init_database
 import time
+
+def check_database_initialized():
+    """检查数据库是否已经初始化"""
+    inspector = inspect(engine)
+    # 检查必要的表是否存在
+    required_tables = {'stocks', 'indices'}  # 根据实际表名调整
+    existing_tables = set(inspector.get_table_names())
+    return required_tables.issubset(existing_tables)
 
 
 def check_file_validity(file_path, max_age_days):
@@ -19,6 +30,13 @@ def check_file_validity(file_path, max_age_days):
 
 
 def main():
+    # 检查数据库初始化状态
+    if not check_database_initialized():
+        logger.info("数据库未初始化，开始初始化...")
+        init_database()
+    else:
+        logger.info("数据库已初始化，跳过初始化步骤")
+
     fetcher = DataFetcher()
     saver = DataSaver()
 
