@@ -16,6 +16,9 @@ class Config:
     # AkShare API 配置
     AKSHARE_API_KEY = os.getenv("AKSHARE_API_KEY", "")
 
+    # 列表更新频率
+    MAX_CSV_AGE_DAYS = int(os.getenv("MAX_CSV_AGE_DAYS", 100))
+
     # 数据更新频率（天）
     DATA_UPDATE_INTERVAL = int(os.getenv("DATA_UPDATE_INTERVAL", 100))
 
