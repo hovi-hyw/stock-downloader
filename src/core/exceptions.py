@@ -1,5 +1,22 @@
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
+from functools import wraps
+import time
+
+def timeout_decorator(seconds):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(func, *args, **kwargs)
+                try:
+                    return future.result(timeout=seconds)
+                except TimeoutError:
+                    raise DataFetchError(f"Operation timed out after {seconds} seconds")
+        return wrapper
+    return decorator
+
 class DataFetchError(Exception):
-    """数据获取异常"""
+    """当数据获取失败时抛出的异常"""
     pass
 
 class DataSaveError(Exception):

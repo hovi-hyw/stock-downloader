@@ -58,16 +58,16 @@ def main():
         index_list = fetcher.fetch_index_list()
         saver.save_index_list_to_csv(index_list, config.INDEX_LIST_CSV)
 
+    # 下载指数日数据并保存到数据库
+    for symbol in index_list["代码"]:
+        index_data = fetcher.fetch_index_daily_data(symbol, "19900101", datetime.today().strftime("%Y%m%d"))
+        saver.save_index_daily_data_to_db(index_data, symbol)
+
 
     # 下载股票日数据并保存到数据库
     for symbol in stock_list["代码"]:
         stock_data = fetcher.fetch_stock_daily_data(symbol, "19900101", datetime.today().strftime("%Y%m%d"))
         saver.save_stock_daily_data_to_db(stock_data, symbol)
-
-    # 下载指数日数据并保存到数据库
-    for symbol in index_list["代码"]:
-        index_data = fetcher.fetch_index_daily_data(symbol, "19900101", datetime.today().strftime("%Y%m%d"))
-        saver.save_index_daily_data_to_db(index_data, symbol)
 
 
 if __name__ == "__main__":
