@@ -10,7 +10,7 @@ logging.basicConfig(
     level=config.LOG_LEVEL,
     format=config.LOG_FORMAT,
     handlers=[
-        logging.FileHandler(config.LOG_FILE),
+        logging.FileHandler(config.LOG_FILE, encoding='utf-8'),
         logging.StreamHandler()
     ]
 )

@@ -51,7 +51,7 @@ class DataFetcher:
         for attempt in range(max_retries):
             try:
                 result = DataFetcher._fetch_with_timeout(fetch_func, *args, **kwargs)
-                time.sleep(1)  # 成功后等待1秒
+                time.sleep(0.5)  # 成功后等待1秒
                 return result
             except DataFetchError as e:
                 logger.warning(f"Timeout on attempt {attempt + 1}/{max_retries}")
