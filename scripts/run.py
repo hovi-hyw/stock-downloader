@@ -14,7 +14,7 @@ def check_database_initialized():
     """检查数据库是否已经初始化"""
     inspector = inspect(engine)
     # 检查必要的表是否存在
-    required_tables = {'stocks', 'indices'}  # 根据实际表名调整
+    required_tables = {'concept_board', 'index_daily_data', 'stock_daily_data'}  # 根据实际表名调整
     existing_tables = set(inspector.get_table_names())
     return required_tables.issubset(existing_tables)
 
@@ -39,6 +39,26 @@ def main():
 
     fetcher = DataFetcher()
     saver = DataSaver()
+
+    # 下载概念板块
+    # 1. 获取并保存概念板块列表
+    concept_list = fetcher.fetch_concept_board_list()
+    saver.save_concept_board_list_to_csv(concept_list, config.CACHE_PATH+"/concept_board_list.csv")
+
+    # 2. 获取并保存每个概念板块的历史数据
+    for _, row in concept_list.iterrows():
+        board_name = row['板块名称']
+        board_code = row['板块代码']
+
+        try:
+            hist_data = fetcher.fetch_concept_board_daily_data(board_name)
+            if hist_data is not None:
+                saver.save_concept_board_data_to_db(hist_data, board_name, board_code)
+            time.sleep(1)  # 避免请求过快
+        except Exception as e:
+            logger.error(f"Error processing board {board_name}: {e}")
+            continue
+
 
     # 获取股票列表
     if check_file_validity(config.STOCK_LIST_CSV, config.MAX_CSV_AGE_DAYS):
