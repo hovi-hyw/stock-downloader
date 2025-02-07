@@ -5,33 +5,6 @@ import time
 from src.core.config import config
 from datetime import datetime
 
-
-def init_db():
-    # 创建数据库连接
-    engine = create_engine(config.DATABASE_URL)
-
-
-    # 元数据
-    metadata = MetaData()
-
-    # 定义概念板块历史数据表
-    concept_board_table = Table(
-        "concept_board",  # 表名，你可以自定义
-        metadata,
-        Column("concept_name", String, comment="板块名称"),
-        Column("concept_code", String, primary_key=True, comment="板块代码"), # 板块代码作为主键之一
-        Column("date", Date, primary_key=True, comment="日期"), # 日期作为主键之一，和板块代码一起构成联合主键
-        Column("涨跌幅", Float, comment="涨跌幅"),
-        Column("总市值", Float, comment="总市值"),
-        Column("换手率", Float, comment="换手率"),
-        Column("上涨家数", Integer, comment="上涨家数"),
-        Column("下跌家数", Integer, comment="下跌家数"),
-        Column("上涨比例", Float, comment="上涨比例"),
-    )
-    # 创建表 (如果表不存在)
-    metadata.create_all(engine)
-
-
 def get_concept_board_names():
     """获取概念板块名称和代码"""
     concept_df = ak.stock_board_concept_name_em()
@@ -45,10 +18,11 @@ def get_concept_board_data(symbol, board_name):
     :param board_name: 板块名称
     :return: pandas DataFrame
     """
-    print(f"Debug: 尝试获取板块代码为 {symbol} ({board_name}) 的历史数据...")  # 调试信息
+    print(f"尝试获取板块代码为 {symbol} ({board_name}) 的历史数据...")  # 调试信息
 
     try:
-        hist_df = ak.stock_board_concept_hist_em(symbol=board_name)
+        hist_df = ak.stock_board_concept_hist_em(symbol=board_name,start_date='20250201',end_date='20990101')
+        print("DONE!!!")
     except IndexError as e:
         print(f"Error: 获取板块 {board_name} ({symbol}) 历史数据时发生 IndexError: {e}")
         print(f"Error: 可能是板块代码 {symbol} 不正确或 akshare 无法识别。")
@@ -80,31 +54,9 @@ def get_concept_board_data(symbol, board_name):
         return None
 
 
-def store_concept_board_data(df):
-    """将概念板块历史数据写入数据库"""
-    if df is not None and not df.empty:
-        try:
-            # 将 DataFrame 转换为字典列表，准备批量插入
-            data_to_insert = df.to_dict(orient='records')
-
-            # 使用 SQLAlchemy Core 的方式进行批量插入
-            with engine.connect() as connection:
-                insert_stmt = concept_board_table.insert()
-                connection.execute(insert_stmt, data_to_insert)
-                connection.commit() # 提交事务
-
-            print(f"成功写入 {len(df)} 条数据到数据库.")
-        except Exception as e:
-            print(f"写入数据库失败: {e}")
-            print(df) # 打印未能成功写入的数据，方便排查问题
-    else:
-        print("没有数据需要写入数据库。")
-
-
-def download_write2db():
+def showdata():
     """主程序入口"""
     start_time = time.time()
-    print("开始获取概念板块数据并写入数据库...")
 
     concept_names_df = get_concept_board_names()
     if concept_names_df is not None and not concept_names_df.empty:
@@ -116,7 +68,7 @@ def download_write2db():
 
             hist_data_df = get_concept_board_data(symbol=board_code, board_name=board_name)
             if hist_data_df is not None and not hist_data_df.empty:
-                store_concept_board_data(hist_data_df)
+                print(hist_data_df)
             time.sleep(1) # 建议添加延时，避免请求过快被限制
             print(f"概念板块: {board_name} ({board_code}) 处理完成.")
     else:
@@ -125,11 +77,6 @@ def download_write2db():
     end_time = time.time()
     print(f"数据处理完成，总耗时: {end_time - start_time:.2f} 秒.")
 
-def main():
-    concept_daily_data = get_concept_board_names()
-    now = datetime.now()
-    now_a_day = now.strftime("%Y-%m-%d")
-    concept_daily_data.to_csv(f'{now_a_day}.csv')
 
 if __name__ == "__main__":
-    main()
+    showdata()

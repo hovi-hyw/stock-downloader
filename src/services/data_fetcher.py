@@ -100,10 +100,20 @@ class DataFetcher:
         """获取概念板块历史数据"""
         try:
             logger.info(f"Fetching daily data for concept board {board_name}...")
-            return self._fetch_with_retry(
+            data = self._fetch_with_retry(
                 ak.stock_board_concept_hist_em,
-                symbol=board_name
+                symbol=board_name,
+                start_date='20220101',      # 这里要想办法解决一下，起始时间如何根据API来确定？
+                end_date='20310101'
             )
+            # 添加调试信息
+            logger.debug(f"Received data columns: {data.columns.tolist()}")
+            logger.debug(f"Received data shape: {data.shape}")
+            return data
+            # return self._fetch_with_retry(
+            #     ak.stock_board_concept_hist_em,
+            #     symbol=board_name
+            # )
         except Exception as e:
             logger.error(f"Failed to fetch concept board data: {e}")
             raise DataFetchError(f"Failed to fetch concept board data: {e}")
