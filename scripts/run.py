@@ -40,24 +40,24 @@ def main():
     fetcher = DataFetcher()
     saver = DataSaver()
 
-    # 下载概念板块
-    # 1. 获取并保存概念板块列表
-    concept_list = fetcher.fetch_concept_board_list()
-    saver.save_concept_board_list_to_csv(concept_list, config.CACHE_PATH+"/concept_board_list.csv")
-
-    # 2. 获取并保存每个概念板块的历史数据
-    for _, row in concept_list.iterrows():
-        board_name = row['板块名称']
-        board_code = row['板块代码']
-
-        try:
-            hist_data = fetcher.fetch_concept_board_daily_data(board_name)
-            if hist_data is not None:
-                saver.save_concept_board_data_to_db(hist_data, board_name, board_code)
-            time.sleep(1)  # 避免请求过快
-        except Exception as e:
-            logger.error(f"Error processing board {board_name}: {e}")
-            continue
+    # # 下载概念板块
+    # # 1. 获取并保存概念板块列表
+    # concept_list = fetcher.fetch_concept_board_list()
+    # saver.save_concept_board_list_to_csv(concept_list, config.CACHE_PATH+"/concept_board_list.csv")
+    #
+    # # 2. 获取并保存每个概念板块的历史数据
+    # for _, row in concept_list.iterrows():
+    #     board_name = row['板块名称']
+    #     board_code = row['板块代码']
+    #
+    #     try:
+    #         hist_data = fetcher.fetch_concept_board_daily_data(board_name)
+    #         if hist_data is not None:
+    #             saver.save_concept_board_data_to_db(hist_data, board_name, board_code)
+    #         time.sleep(0.5)  # 避免请求过快
+    #     except Exception as e:
+    #         logger.error(f"Error processing board {board_name}: {e}")
+    #         continue
 
 
     # 获取股票列表

@@ -14,7 +14,7 @@ class DataFetcher:
         self.today = datetime.today()
 
     @staticmethod
-    def fetch_stock_list(self):
+    def fetch_stock_list():
         """获取股票列表"""
         try:
             logger.info("Fetching stock list...")
@@ -25,7 +25,7 @@ class DataFetcher:
             raise DataFetchError(f"Failed to fetch stock list: {e}")
 
     @staticmethod
-    def fetch_index_list(self):
+    def fetch_index_list():
         """获取指数列表"""
         try:
             logger.info("Fetching index list...")
