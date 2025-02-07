@@ -87,6 +87,28 @@ class DataFetcher:
             end_date=end_date
         )
 
+    def fetch_concept_board_list(self):
+        """获取概念板块列表"""
+        try:
+            logger.info("Fetching concept board list...")
+            return self._fetch_with_retry(ak.stock_board_concept_name_em)
+        except Exception as e:
+            logger.error(f"Failed to fetch concept board list: {e}")
+            raise DataFetchError(f"Failed to fetch concept board list: {e}")
+
+    def fetch_concept_board_daily_data(self, board_name):
+        """获取概念板块历史数据"""
+        try:
+            logger.info(f"Fetching daily data for concept board {board_name}...")
+            return self._fetch_with_retry(
+                ak.stock_board_concept_hist_em,
+                symbol=board_name
+            )
+        except Exception as e:
+            logger.error(f"Failed to fetch concept board data: {e}")
+            raise DataFetchError(f"Failed to fetch concept board data: {e}")
+
+
     def get_last_n_days(self, n):
         """获取过去 n 天的日期"""
         return (self.today - timedelta(days=n)).strftime("%Y%m%d")
