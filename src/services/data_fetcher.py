@@ -66,13 +66,14 @@ class DataFetcher:
                     continue
                 raise DataFetchError(f"Failed to fetch data after {max_retries} attempts: {e}")
 
-    def fetch_stock_daily_data(self, symbol, start_date, end_date):
-        logger.info(f"Fetching daily data for stock {symbol} from {start_date} to {end_date}...")
+    def fetch_stock_daily_data(self, symbol, start_date, end_date, adjust):
+        logger.info(f"Fetching daily data in mode {adjust}: for {symbol} from {start_date} to {end_date}...")
         return self._fetch_with_retry(
             ak.stock_zh_a_daily,
             symbol=symbol,
             start_date=start_date,
-            end_date=end_date
+            end_date=end_date,
+            adjust=adjust
         )
 
     def fetch_index_daily_data(self, symbol, start_date, end_date):
@@ -96,24 +97,18 @@ class DataFetcher:
             logger.error(f"Failed to fetch concept board list: {e}")
             raise DataFetchError(f"Failed to fetch concept board list: {e}")
 
-    def fetch_concept_board_daily_data(self, board_name):
+    def fetch_concept_board_daily_data(self, board_name, adjust, start_date='20220101', end_date='20310101'):
         """获取概念板块历史数据"""
         try:
-            logger.info(f"Fetching daily data for concept board {board_name}...")
-            data = self._fetch_with_retry(
+            logger.info(f"Fetching daily data in mode {adjust} : for concept board {board_name}...")
+            return self._fetch_with_retry(
                 ak.stock_board_concept_hist_em,
                 symbol=board_name,
-                start_date='20220101',      # 这里要想办法解决一下，起始时间如何根据API来确定？
-                end_date='20310101'
+                start_date=start_date,      # 这里要想办法解决一下，起始时间如何根据API来确定？
+                end_date=end_date,
+                adjust=adjust
             )
-            # 添加调试信息
-            logger.debug(f"Received data columns: {data.columns.tolist()}")
-            logger.debug(f"Received data shape: {data.shape}")
-            return data
-            # return self._fetch_with_retry(
-            #     ak.stock_board_concept_hist_em,
-            #     symbol=board_name
-            # )
+
         except Exception as e:
             logger.error(f"Failed to fetch concept board data: {e}")
             raise DataFetchError(f"Failed to fetch concept board data: {e}")
