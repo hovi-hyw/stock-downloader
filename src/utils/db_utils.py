@@ -1,7 +1,7 @@
 from sqlalchemy import inspect
 from src.database.session import engine
 from src.core.logger import logger
-from scripts.init_db import init_database
+from scripts.init.init_db import init_database
 
 def check_database_initialized():
     """检查数据库是否已经初始化"""

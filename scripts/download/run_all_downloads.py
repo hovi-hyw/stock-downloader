@@ -15,9 +15,9 @@ def run_script(script_name):
 
 def main():
     scripts_to_run = [
-        "scripts/download_index.py",
-        "scripts/download_concept.py",
-        "scripts/download_stock.py",
+        "scripts/download/download_index.py",
+        "scripts/download/download_concept.py",
+        "scripts/download/download_stock.py",
     ]
 
     for script in scripts_to_run:

@@ -7,7 +7,7 @@ from src.database.session import engine
 from src.services.data_saver import DataSaver
 from src.core.config import config
 from src.core.logger import logger
-from scripts.init_db import init_database
+from scripts.init.init_db import init_database
 import time
 
 def check_database_initialized():
