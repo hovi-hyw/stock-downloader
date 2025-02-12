@@ -1,9 +1,10 @@
-# filepath: /d:/codes/Pycharm/stock-insight/scripts/strategy.py
 """
 scripts/strategy.py
 
 主程序，运行选股策略流程。
 """
+import pandas as pd
+
 import scripts.strategy.magic_nine as magic_nine
 import scripts.strategy.deep_down as deep_down
 import scripts.strategy.data_reader as data_reader
@@ -18,10 +19,15 @@ def run_magic_nine_strategy(data, output_instance):
     buy_signals, sell_signals = magic_nine_strategy.find_signals(data)
     output_instance.print_signals(buy_signals, sell_signals, "Magic Nine")
 
-def run_deep_down_strategy(data, output_instance):
+
+def run_deep_down_strategy(stock_data, index_data, output_instance):
     """
     运行 Deep Down 选股策略。
     """
+    deep_down_strategy = deep_down.DeepDownStrategy()
+    buy_signals = deep_down_strategy.calculate_signals(stock_data, index_data)
+    sell_signals = pd.DataFrame()  # Deep Down策略只有买入信号
+    output_instance.print_signals(buy_signals, sell_signals, "Deep Down")
 
 
 def main():
@@ -34,20 +40,26 @@ def main():
 
     # 示例任务
     tasks = [
-        ('index', 'all', '20240101', '20990110'),  # 股票数据
+        ('stock', 'all', '20250101', '20990110'),  # 股票数据
+        ('index', 'sh000001', '20250101', '20990110')  # 上证指数数据
         # 可扩展更多任务
     ]
 
-    for data_type, symbol, start_date, end_date in tasks:
-        # 读取数据
-        data = data_reader_instance.get_data(data_type, symbol, start_date, end_date)
-        if data.empty:
-            print(f"{data_type} 数据为空，跳过")
-            continue
+    # 读取数据
+    stock_data = data_reader_instance.get_data(tasks[0][0], tasks[0][1], tasks[0][2], tasks[0][3])
+    index_data = data_reader_instance.get_data(tasks[1][0], tasks[1][1], tasks[1][2], tasks[1][3])
 
-        # 运行策略
-        run_magic_nine_strategy(data.copy(), output_instance)  # 传入数据副本，避免修改原始数据
-        run_deep_down_strategy(data.copy(), output_instance)
+    if stock_data.empty:
+        print(f"{tasks[0][0]} 数据为空，跳过")
+        return
+
+    if index_data.empty:
+        print(f"{tasks[1][0]} 数据为空，跳过")
+        return
+
+    # 运行策略
+    run_magic_nine_strategy(stock_data.copy(), output_instance)
+    run_deep_down_strategy(stock_data.copy(), index_data.copy(), output_instance)
 
 if __name__ == "__main__":
     main()
