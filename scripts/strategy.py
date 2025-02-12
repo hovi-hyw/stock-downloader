@@ -40,8 +40,8 @@ def main():
 
     # 示例任务
     tasks = [
-        ('stock', 'all', '20250101', '20990110'),  # 股票数据
-        ('index', 'sh000001', '20250101', '20990110')  # 上证指数数据
+        ('stock', 'all', '20240901', '20990110'),  # 股票数据
+        ('index', 'sh000001', '20240901', '20990110')  # 上证指数数据
         # 可扩展更多任务
     ]
 
@@ -58,7 +58,7 @@ def main():
         return
 
     # 运行策略
-    run_magic_nine_strategy(stock_data.copy(), output_instance)
+    # run_magic_nine_strategy(stock_data.copy(), output_instance)
     run_deep_down_strategy(stock_data.copy(), index_data.copy(), output_instance)
 
 if __name__ == "__main__":

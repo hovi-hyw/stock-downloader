@@ -31,55 +31,30 @@ class DeepDownStrategy:
         self.required_history_days = 63  # 需要的历史数据天数
         self.index_code = 'sh000001'  # 默认使用上证指数
 
-    def calculate_signals(self,
-                          data_reader,
-                          market_type: str = 'stock',
-                          start_date: str = None,
-                          end_date: str = None,
-                          index_code: str = None) -> pd.DataFrame:
+    def calculate_signals(self, stock_df: pd.DataFrame, index_df: pd.DataFrame) -> pd.DataFrame:
         """
         计算指定市场的所有股票的买入信号
 
         参数:
-            data_reader: 数据读取器实例
-            market_type: 市场类型，可选 'stock'(股票),'index'(指数),'concept'(概念板块)
-            start_date: 开始日期，格式YYYYMMDD
-            end_date: 结束日期，格式YYYYMMDD
-            index_code: 参考大盘指数代码，默认使用上证指数
+            stock_df: DataFrame, 股票数据
+            index_df: DataFrame, 指数数据
 
         返回:
             DataFrame: 包含买入信号的数据框
         """
-        if index_code:
-            self.index_code = index_code
-
-        # 如果未指定日期，使用当前日期往前推
-        if not end_date:
-            end_date = datetime.now().strftime('%Y%m%d')
-        if not start_date:
-            start_date = (datetime.strptime(end_date, '%Y%m%d') -
-                          timedelta(days=self.required_history_days)).strftime('%Y%m%d')
-
-        # 获取指数数据
-        index_data = data_reader.get_data('index', self.index_code, start_date, end_date)
-        if index_data.empty:
-            raise ValueError(f"无法获取指数数据: {self.index_code}")
-
-        # 获取市场所有标的数据
-        market_data = data_reader.get_data(market_type, 'all', start_date, end_date)
-        if market_data.empty:
-            raise ValueError(f"无法获取{market_type}市场数据")
+        if stock_df.empty or index_df.empty:
+            return pd.DataFrame()
 
         # 按股票代码分组处理
         signals = []
-        unique_symbols = market_data['symbol'].unique()
+        unique_symbols = stock_df['symbol'].unique()
 
         for symbol in tqdm(unique_symbols, desc="计算选股信号"):
-            stock_data = market_data[market_data['symbol'] == symbol]
+            stock_data = stock_df[stock_df['symbol'] == symbol]
             if len(stock_data) < self.required_history_days:
                 continue
 
-            result = self._calculate_single_stock(stock_data, index_data)
+            result = self._calculate_single_stock(stock_data, index_df)
             if not result.empty:
                 signals.append(result)
 
