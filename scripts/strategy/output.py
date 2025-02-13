@@ -6,6 +6,8 @@ strategy/output.py
 
 import pandas as pd
 
+from src.core.logger import logger
+
 
 class Output:
     """
@@ -22,15 +24,19 @@ class Output:
         :param strategy_name: 策略名称，用于输出标题。
         """
         print(f"\n=== {strategy_name} 策略 - 买入信号 ===")
+        logger.info(f"\n=== {strategy_name} 策略 - 买入信号 ===")
         if not buy_signals.empty:
             for _, signal in buy_signals.iterrows():
                 print(f"代码: {signal['symbol']}, 日期: {signal['date']}, 收盘价: {signal['close']:.2f}")
+                logger.info(f"代码: {signal['symbol']}, 日期: {signal['date']}, 收盘价: {signal['close']:.2f}")
         else:
             print("没有发现买入信号")
 
         print(f"\n=== {strategy_name} 策略 - 卖出信号 ===")
+        logger.info(f"\n=== {strategy_name} 策略 - 卖出信号 ===")
         if not sell_signals.empty:
             for _, signal in sell_signals.iterrows():
                 print(f"代码: {signal['symbol']}, 日期: {signal['date']}, 收盘价: {signal['close']:.2f}")
+                logger.info(f"代码: {signal['symbol']}, 日期: {signal['date']}, 收盘价: {signal['close']:.2f}")
         else:
             print("没有发现卖出信号")

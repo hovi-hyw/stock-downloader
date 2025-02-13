@@ -1,3 +1,4 @@
+# scripts/strategy/data_reader.py
 """
 scripts/strategy/data_reader.py
 """
@@ -23,13 +24,13 @@ class DataReader:
         self.engine = create_engine(config.DATABASE_URL)
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
-    def get_data(self, data_type: str, symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
+    def get_data(self, data_type: str, symbol, start_date: str, end_date: str) -> pd.DataFrame:
         """
         从数据库读取数据。
 
         参数:
             data_type: 数据类型，可选 'stock'(股票), 'index'(指数), 'concept'(概念板块)。
-            symbol: 股票代码。如果为 'all'，则读取所有股票的数据。
+            symbol: 股票代码或股票代码列表。如果为 'all'，则读取所有股票的数据。
             start_date: 开始日期，格式 YYYYMMDD。
             end_date: 结束日期，格式 YYYYMMDD。
 
@@ -52,7 +53,11 @@ class DataReader:
 
                 query = session.query(model).filter(model.date >= start_date, model.date <= end_date)
 
-                if symbol != 'all':
+                if symbol == 'all':
+                    pass # 如果是all，则不添加symbol过滤条件
+                elif isinstance(symbol, list):
+                    query = query.filter(model.symbol.in_(symbol))
+                else:
                     query = query.filter(model.symbol == symbol)
 
                 df = pd.read_sql(query.statement, session.bind)

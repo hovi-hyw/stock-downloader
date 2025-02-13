@@ -42,7 +42,7 @@ def main():
 
     # 示例任务
     tasks = [
-        ('temp', 'all', '20230101', '20250101'),  # 股票数据
+        ('temp', 'all', '20200101', '20250101'),  # 股票数据
         ('index', 'sh000001')  # 上证指数数据
         # 可扩展更多任务
     ]
@@ -50,7 +50,8 @@ def main():
     # 读取数据
     stock_data = data_reader_instance.get_data(tasks[0][0], tasks[0][1], tasks[0][2], tasks[0][3])
     index_data = data_reader_instance.get_data(tasks[1][0], tasks[1][1], tasks[0][2], tasks[0][3])
-
+    print("读取的数据总量:", len(stock_data))
+    print("读取的数据总量:", len(index_data))
     # # 测试一下
     # df = stock_data.copy()
     # # 计算DXJP
