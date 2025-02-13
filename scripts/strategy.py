@@ -1,3 +1,4 @@
+# scripts/strategy.py
 """
 scripts/strategy.py
 
@@ -7,6 +8,7 @@ scripts/strategy.py
 import pandas as pd
 
 import scripts.strategy.magic_nine as magic_nine
+import scripts.strategy.deep_down as deep_down  # Import the deep_down strategy
 import scripts.strategy.data_reader as data_reader
 import scripts.strategy.output as output
 
@@ -25,21 +27,22 @@ def run_deep_down_strategy(stock_data, index_data, output_instance):
     """
     运行 Deep Down 选股策略。
     """
-    pass
+    deep_down_strategy = deep_down.DeepDownStrategy()
+    data = deep_down_strategy.calculate_signals(stock_data, index_data)
+    buy_signals = deep_down_strategy.find_signals(data)
+    output_instance.print_signals(buy_signals, pd.DataFrame(), "Deep Down")  # 这个策略只有买入信号
 
 
 def main():
     """
     主函数，运行选股策略。
     """
-
     # 示例任务
     tasks = [
-        ('temp', ['sh600522','sh600523'], '20200101', '20250101'),  # 股票数据
-        # ('temp', 'all', '20200101', '20250101'),  # 股票数据
+        ('temp', ['sh600522', 'sh600523'], '20200101', '20250101'),  # 股票数据
         ('index', 'sh000001')  # 上证指数数据
-        # 可扩展更多任务
     ]
+
     # 初始化模块
     data_reader_instance = data_reader.DataReader()
     output_instance = output.Output()
@@ -56,8 +59,12 @@ def main():
         print(f"{tasks[1][0]} 数据为空，跳过")
         return
 
-    # 运行策略
-    run_magic_nine_strategy(stock_data.copy(), output_instance)
+    # 运行魔术九转策略
+    # run_magic_nine_strategy(stock_data.copy(), output_instance)
+
+    # 运行深度下跌策略
+    run_deep_down_strategy(stock_data.copy(), index_data.copy(), output_instance)
+
 
 if __name__ == "__main__":
     main()
