@@ -54,13 +54,23 @@ class DataReader:
                 query = session.query(model).filter(model.date >= start_date, model.date <= end_date)
 
                 if symbol == 'all':
-                    pass # 如果是all，则不添加symbol过滤条件
+                    print("执行全量查询")
+                    # 先检查总记录数
+                    count = query.count()
+                    print(f"符合日期条件的总记录数: {count}")
                 elif isinstance(symbol, list):
+                    print(f"查询特定股票列表: {len(symbol)} 只股票")
                     query = query.filter(model.symbol.in_(symbol))
                 else:
+                    print(f"查询单个股票: {symbol}")
                     query = query.filter(model.symbol == symbol)
 
+                # 执行查询前打印 SQL
+                print("执行的 SQL 查询:")
+                print(query.statement)
+
                 df = pd.read_sql(query.statement, session.bind)
+                print(f"查询结果数据量: {len(df)}")
 
                 if not df.empty:
                     return df

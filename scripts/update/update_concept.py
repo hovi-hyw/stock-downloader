@@ -20,7 +20,9 @@ def is_file_from_today(file_path):
 
 
 def main():
-    concept_board_file = os.path.join(config.CACHE_PATH, "2025-02-12.csv")
+    # 动态生成当天日期的文件名
+    today_str = datetime.now().strftime("%Y-%m-%d")  # 获取当前日期并格式化为 YYYY-MM-DD
+    concept_board_file = os.path.join(config.CACHE_PATH, f"{today_str}.csv")
     
     if not is_file_from_today(concept_board_file):
         logger.info("概念板块列表文件不是今天生成的，需要执行更新任务")
