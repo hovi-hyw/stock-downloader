@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, Float, Date,  PrimaryKeyConstraint
 from src.database.base import Base
 
-class StockDailyData(Base):
-    __tablename__ = "stock_daily_data"
+class StockDataTemp(Base):
+    __tablename__ = "stock_data_20_25"
     
     symbol = Column(String, nullable=False)  # 股票代码
     date = Column(Date, nullable=False)      # 日期

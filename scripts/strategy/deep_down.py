@@ -17,10 +17,7 @@ DEEPDOWN选股策略实现。
 """
 
 import pandas as pd
-import numpy as np
 from tqdm import tqdm
-from typing import List, Tuple, Optional
-from datetime import datetime, timedelta
 
 
 class DeepDownStrategy:

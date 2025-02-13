@@ -2,9 +2,10 @@
 scripts/strategy/data_reader.py
 """
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.database.models.stock import StockDailyData
+from src.database.models.stock2025 import StockDataTemp
 from src.database.models.index import IndexDailyData
 from src.database.models.concept import ConceptBoardData
 from src.core.config import config
@@ -43,6 +44,8 @@ class DataReader:
                     model = IndexDailyData
                 elif data_type == 'concept':
                     model = ConceptBoardData
+                elif data_type == 'temp':
+                    model = StockDataTemp
                 else:
                     logger.error(f"无效的数据类型: {data_type}")
                     return pd.DataFrame()

@@ -43,7 +43,7 @@ def main():
     # # 下载概念板块
     # # 1. 获取并保存概念板块列表
     # concept_list = fetcher.fetch_concept_board_list()
-    # saver.save_concept_board_list_to_csv(concept_list, config.CACHE_PATH+"/concept_board_list.csv")
+    # saver.save_concept_board_list_to_csv(concept_list, config.CACHE_PATH+"/2025-02-12.csv")
     #
     # # 2. 获取并保存每个概念板块的历史数据
     # for _, row in concept_list.iterrows():
