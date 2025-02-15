@@ -1,11 +1,18 @@
 import subprocess
+import os
 from src.core.logger import logger
+import sys
 
 def run_script(script_name):
     """运行指定的 Python 脚本"""
     try:
         logger.info(f"开始运行脚本: {script_name}")
-        subprocess.run(["python", script_name], check=True)
+        # 动态获取当前 Python 解释器路径
+        python_path = sys.executable
+        # 设置环境变量
+        env = os.environ.copy()
+        env["PYTHONPATH"] = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+        subprocess.run([python_path, script_name], env=env, check=True)
         logger.info(f"脚本 {script_name} 运行完成")
     except subprocess.CalledProcessError as e:
         logger.error(f"脚本 {script_name} 运行出错: {e}")
@@ -15,9 +22,9 @@ def run_script(script_name):
 
 def main():
     scripts_to_run = [
-        "scripts/download/download_index.py",
-        "scripts/download/download_concept.py",
-        "scripts/download/download_stock.py",
+        "download_index.py",
+        "download_concept.py",
+        "download_stock.py",
     ]
 
     for script in scripts_to_run:
