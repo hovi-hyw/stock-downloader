@@ -66,7 +66,7 @@ class DataFetcher:
                     continue
                 raise DataFetchError(f"Failed to fetch data after {max_retries} attempts: {e}")
 
-    def fetch_stock_daily_data(self, symbol, start_date, end_date, adjust):
+    def fetch_stock_daily_data(self, symbol, start_date, end_date, adjust='hfq'):
         logger.info(f"Fetching daily data in mode {adjust}: for {symbol} from {start_date} to {end_date}...")
         return self._fetch_with_retry(
             ak.stock_zh_a_daily,
