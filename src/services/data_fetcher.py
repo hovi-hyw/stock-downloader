@@ -28,8 +28,8 @@ class DataFetcher:
     def fetch_index_list():
         """获取指数列表"""
         try:
-            logger.info("Fetching index list...")
-            index_list = ak.stock_zh_index_spot_sina()
+            logger.info("Fetching index list from EastMoney...")
+            index_list = ak.stock_zh_index_spot_em(symbol="沪深重要指数")
             return index_list
         except Exception as e:
             logger.error(f"Failed to fetch index list: {e}")
@@ -79,13 +79,12 @@ class DataFetcher:
     def fetch_index_daily_data(self, symbol, start_date, end_date):
         """获取指数日数据"""
         logger.info(f"Fetching daily data for index {symbol} from {start_date} to {end_date}...")
-        symbol = symbol[2:]  # 2个API的symbol不一样
         return self._fetch_with_retry(
-            ak.index_zh_a_hist,
+            ak.index_zh_a_hist,  # 修改为东财的历史数据接口
             symbol=symbol,
-            period="daily",
             start_date=start_date,
-            end_date=end_date
+            end_date=end_date,
+            period="daily"
         )
 
     def fetch_concept_board_list(self):

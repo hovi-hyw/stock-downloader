@@ -75,10 +75,10 @@ class DataSaver:
             logger.error(f"Failed to save daily data for stock {symbol} to database: {e}")
             raise DataSaveError(f"Failed to save daily data for stock {symbol} to database: {e}")
 
-    def save_index_daily_data_to_db(self, index_data, symbol):
+    def save_index_daily_data_to_db(self, index_data, symbol, index_name):  # 添加 index_name 参数
         """保存指数日数据到数据库"""
         try:
-            logger.info(f"Saving daily data for index {symbol} to database...")
+            logger.info(f"Saving daily data for index {symbol}({index_name}) to database...")
             db: Session = next(get_db())
             updated_count = 0
             inserted_count = 0
@@ -93,11 +93,12 @@ class DataSaver:
                 if existing_record:
                     if row_date > existing_record.date:
                         existing_record.open = row["开盘"]
+                        existing_record.name = index_name
                         existing_record.close = row["收盘"]
                         existing_record.high = row["最高"]
                         existing_record.low = row["最低"]
                         existing_record.volume = row["成交量"]
-                        existing_record.amount = row["成交额"]
+                        existing_record.amount = row["成交额"] / 10000.0
                         existing_record.amplitude = row["振幅"]
                         existing_record.change_rate = row["涨跌幅"]
                         existing_record.change_amount = row["涨跌额"]
@@ -106,13 +107,14 @@ class DataSaver:
                 else:
                     db.add(IndexDailyData(
                         symbol=symbol,
+                        name=index_name,
                         date=row_date,
                         open=row["开盘"],
                         close=row["收盘"],
                         high=row["最高"],
                         low=row["最低"],
                         volume=row["成交量"],
-                        amount=row["成交额"],
+                        amount=row["成交额"] / 10000.0,
                         amplitude=row["振幅"],
                         change_rate=row["涨跌幅"],
                         change_amount=row["涨跌额"],
