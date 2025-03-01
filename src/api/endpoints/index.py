@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.api.models import IndexData
-from src.database.models import IndexDailyData
+from src.database.models.index import IndexDailyData
 from src.database.session import get_db
 
 router = APIRouter()
