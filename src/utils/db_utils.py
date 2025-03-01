@@ -10,7 +10,7 @@ from sqlalchemy import inspect
 
 from src.core.logger import logger
 from src.database.session import engine
-from src.scripts.init_db import init_database
+from src.utils.init_db import init_database
 
 
 def check_database_initialized():

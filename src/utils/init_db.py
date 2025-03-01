@@ -1,8 +1,7 @@
 # scripts/init_db.py
 from sqlalchemy import inspect
-
-from src.core.logger import logger
 from src.database.session import engine, Base
+from src.core.logger import logger
 
 
 def init_database():
@@ -25,7 +24,6 @@ def init_database():
     except Exception as e:
         logger.error(f"创建数据库表时发生错误: {str(e)}")
         raise
-
 
 if __name__ == '__main__':
     init_database()

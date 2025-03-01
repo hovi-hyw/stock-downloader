@@ -2,14 +2,13 @@
 
 ## 项目简介
 
-本项目是一个用于下载和存储股票、指数、概念板块数据的服务。
+本项目是一个用于下载股票和指数数据的服务，用于构建数据库。
 
 ## 功能
 
 *   下载股票日线数据
 *   下载指数日线数据
 *   存储数据到 PostgreSQL 数据库
-*   提供 API 接口访问数据
 
 ## 快速开始
 
@@ -25,7 +24,7 @@
     创建 `.env` 文件，并配置以下环境变量：
 
     ```
-    DATABASE_URL=postgresql://si:jojo@localhost:5432/stock
+    DATABASE_URL=postgresql://id:pwd@localhost:5432/db_name
     MAX_WORKERS=4
     BATCH_SIZE=100
     API_RETRY_COUNT=3
@@ -60,25 +59,15 @@
 
     *   确保您已安装 `kubectl` 并配置为连接到您的 Kubernetes 集群。
     *   替换 `k8s/deployment.yaml` 和 `k8s/service.yaml` 中的占位符（例如，`your-docker-repo/stock-data-service:latest` 和 `postgresql://si:jojo@your-postgres-service:5432/stock`）为您的实际值。
-    *   如果您使用 Ingress，请配置 `k8s/ingress.yaml` 并确保您的 Ingress Controller 正在运行。
 
     ```bash
     kubectl apply -f k8s/deployment.yaml
     kubectl apply -f k8s/service.yaml
-    kubectl apply -f k8s/ingress.yaml  # 如果您使用 Ingress
     ```
 
 ## 使用
 
-### API 接口
-
-*   `GET /api/v1/stock/{symbol}/{date}`: 获取指定股票指定日期的日线数据
-*   `GET /api/v1/index/{symbol}/{date}`: 获取指定指数指定日期的日线数据
-
-### 健康检查
-
-*   您可以添加健康检查探针（livenessProbe 和 readinessProbe）到 `k8s/deployment.yaml` 中。
-*   您需要在 FastAPI 应用中定义一个 `/health` 端点，用于返回健康状态。
+*   运行 `src/main.py` 文件，它将下载股票和指数数据并保存到数据库。
 
 ## 贡献
 
