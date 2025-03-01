@@ -1,16 +1,39 @@
+# src/services/data_saver.py
+"""
+此模块负责将股票相关数据保存到数据库。
+实现了将股票列表、日线数据保存到数据库的功能，并处理保存过程中的异常。
+Authors: hovi.hyw & AI
+Date: 2024-07-03
+"""
+
 import pandas as pd
 from sqlalchemy.orm import Session
-from ..database.session import get_db
-from ..database.models.stock import StockDailyData
-from ..database.models.index import IndexDailyData
-from ..database.models.concept import ConceptBoardData
-from ..core.logger import logger
-from ..core.exceptions import DataSaveError
+
+from src.core.exceptions import DataSaveError
+from src.core.logger import logger
+from src.database.models.concept import ConceptBoardData
+from src.database.models.index import IndexDailyData
+from src.database.models.stock import StockDailyData
+from src.database.session import get_db
 
 
 class DataSaver:
+    """
+    数据保存类。
+    该类负责将股票、指数和概念板块数据保存到数据库。
+    """
+
     def save_stock_list_to_csv(self, stock_list, file_path):
-        """保存股票列表到 CSV 文件"""
+        """
+        保存股票列表到 CSV 文件。
+
+        Args:
+            stock_list (pandas.DataFrame): 包含股票列表的DataFrame。
+            file_path (str): CSV 文件路径。
+
+        Raises:
+            DataSaveError: 如果保存股票列表到 CSV 文件失败，则抛出此异常。
+        """
         try:
             logger.info(f"Saving stock list to {file_path}...")
             stock_list.to_csv(file_path, index=False)
@@ -19,7 +42,16 @@ class DataSaver:
             raise DataSaveError(f"Failed to save stock list to CSV: {e}")
 
     def save_index_list_to_csv(self, index_list, file_path):
-        """保存指数列表到 CSV 文件"""
+        """
+        保存指数列表到 CSV 文件。
+
+        Args:
+            index_list (pandas.DataFrame): 包含指数列表的DataFrame。
+            file_path (str): CSV 文件路径。
+
+        Raises:
+            DataSaveError: 如果保存指数列表到 CSV 文件失败，则抛出此异常。
+        """
         try:
             logger.info(f"Saving index list to {file_path}...")
             index_list.to_csv(file_path, index=False)
@@ -27,9 +59,17 @@ class DataSaver:
             logger.error(f"Failed to save index list to CSV: {e}")
             raise DataSaveError(f"Failed to save index list to CSV: {e}")
 
-
     def save_stock_daily_data_to_db(self, stock_data, symbol):
-        """保存股票日数据到数据库，仅更新日期较新的数据"""
+        """
+        保存股票日数据到数据库，仅更新日期较新的数据。
+
+        Args:
+            stock_data (pandas.DataFrame): 包含股票日线数据的DataFrame。
+            symbol (str): 股票代码。
+
+        Raises:
+            DataSaveError: 如果保存股票日线数据到数据库失败，则抛出此异常。
+        """
         try:
             logger.info(f"Saving daily data for stock {symbol} to database...")
             db: Session = next(get_db())
@@ -69,7 +109,8 @@ class DataSaver:
                     ))
                     inserted_count += 1
             db.commit()
-            logger.info(f"Updated {updated_count} records and inserted {inserted_count} new records for stock {symbol}.")
+            logger.info(
+                f"Updated {updated_count} records and inserted {inserted_count} new records for stock {symbol}.")
         except Exception as e:
             db.rollback()
             logger.error(f"Failed to save daily data for stock {symbol} to database: {e}")
@@ -122,15 +163,17 @@ class DataSaver:
                     ))
                     inserted_count += 1
             db.commit()
-            logger.info(f"Updated {updated_count} records and inserted {inserted_count} new records for index {symbol}.")
+            logger.info(
+                f"Updated {updated_count} records and inserted {inserted_count} new records for index {symbol}.")
         except Exception as e:
             db.rollback()
             logger.error(f"Failed to save daily data for index {symbol} to database: {e}")
             raise DataSaveError(f"Failed to save daily data for index {symbol} to database: {e}")
 
-
     def save_concept_board_list_to_csv(self, concept_list, file_path):
-        """保存概念板块列表到CSV文件"""
+        """
+        保存概念板块列表到CSV文件
+        """
         try:
             logger.info(f"Saving concept board list to {file_path}...")
             concept_list.to_csv(file_path, index=False)
@@ -138,9 +181,10 @@ class DataSaver:
             logger.error(f"Failed to save concept board list to CSV: {e}")
             raise DataSaveError(f"Failed to save concept board list to CSV: {e}")
 
-
     def save_concept_board_data_to_db(self, board_data, concept_name, concept_code):
-        """保存概念板块历史数据到数据库"""
+        """
+        保存概念板块历史数据到数据库
+        """
         try:
             logger.info(f"Saving daily data for concept board {concept_name} to database...")
             db: Session = next(get_db())

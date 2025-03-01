@@ -1,14 +1,17 @@
 import os
-import pandas as pd
+import time
 from datetime import datetime
+
+import pandas as pd
 from sqlalchemy import inspect
-from src.services.data_fetcher import DataFetcher
-from src.database.session import engine
-from src.services.data_saver import DataSaver
+
+from scripts.init.init_db import init_database
 from src.core.config import config
 from src.core.logger import logger
-from scripts.init.init_db import init_database
-import time
+from src.database.session import engine
+from src.services.data_fetcher import DataFetcher
+from src.services.data_saver import DataSaver
+
 
 def check_database_initialized():
     """检查数据库是否已经初始化"""
@@ -59,7 +62,6 @@ def main():
     #         logger.error(f"Error processing board {board_name}: {e}")
     #         continue
 
-
     # 获取股票列表
     if check_file_validity(config.STOCK_LIST_CSV, config.MAX_CSV_AGE_DAYS):
         logger.info("从缓存读取股票列表")
@@ -82,7 +84,6 @@ def main():
     for symbol in index_list["代码"]:
         index_data = fetcher.fetch_index_daily_data(symbol, "19900101", datetime.today().strftime("%Y%m%d"))
         saver.save_index_daily_data_to_db(index_data, symbol)
-
 
     # 下载股票日数据并保存到数据库
     for symbol in stock_list["代码"]:

@@ -1,4 +1,10 @@
-# scripts/init_db.py
+# src/scripts/init_db.py
+"""
+此模块用于初始化数据库，创建所有需要的表。
+Authors: hovi.hyw & AI
+Date: 2024-07-03
+"""
+
 from sqlalchemy import inspect
 
 from src.core.logger import logger
@@ -6,7 +12,9 @@ from src.database.session import engine, Base
 
 
 def init_database():
-    """初始化数据库，创建所有表"""
+    """
+    初始化数据库，创建所有表。
+    """
     try:
         # 检查现有的表
         inspector = inspect(engine)

@@ -1,22 +1,24 @@
-from sqlalchemy import Column, String, Float, Date, Integer, BigInteger, Numeric, PrimaryKeyConstraint
+from sqlalchemy import Column, String, Float, Date, BigInteger, Numeric, PrimaryKeyConstraint
+
 from src.database.base import Base
+
 
 class IndexDailyData(Base):
     __tablename__ = "index_daily_data"
 
-    symbol = Column(String, nullable=False)         # 指数代码
-    date = Column(Date, nullable=False)             # 日期
-    name = Column(String(50))                       # 指数名称
-    open = Column(Float)                            # 开盘
-    close = Column(Float)                           # 收盘
-    high = Column(Float)                            # 最高
-    low = Column(Float)                             # 最低
-    volume = Column(BigInteger)                     # 成交量（使用BigInteger支持大数值）
-    amount = Column(Numeric(13, 2)) # 成交额（单位：万元）
-    amplitude = Column(Float)                       # 振幅
-    change_rate = Column(Float)                     # 涨跌幅
-    change_amount = Column(Float)                   # 涨跌额
-    turnover_rate = Column(Float)                   # 换手率
+    symbol = Column(String, nullable=False)  # 指数代码
+    date = Column(Date, nullable=False)  # 日期
+    name = Column(String(50))  # 指数名称
+    open = Column(Float)  # 开盘
+    close = Column(Float)  # 收盘
+    high = Column(Float)  # 最高
+    low = Column(Float)  # 最低
+    volume = Column(BigInteger)  # 成交量（使用BigInteger支持大数值）
+    amount = Column(Numeric(13, 2))  # 成交额（单位：万元）
+    amplitude = Column(Float)  # 振幅
+    change_rate = Column(Float)  # 涨跌幅
+    change_amount = Column(Float)  # 涨跌额
+    turnover_rate = Column(Float)  # 换手率
 
     __table_args__ = (
         PrimaryKeyConstraint('symbol', 'date'),

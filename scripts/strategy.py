@@ -5,15 +5,11 @@ scripts/strategy.py
 主程序，运行选股策略流程。
 """
 
-import pandas as pd
-from datetime import datetime
-
-import scripts.strategy.magic_nine as magic_nine
-import scripts.strategy.deep_down as deep_down
-import scripts.strategy.deep_down_analysis as deep_down_analysis
-import scripts.strategy.data_reader as data_reader
-import scripts.strategy.output as output
 from core.logger import logger
+
+import bak.strategy.data_reader as data_reader
+import bak.strategy.deep_down_analysis as deep_down_analysis
+import bak.strategy.output as output
 
 
 # scripts/strategy.py
@@ -51,6 +47,7 @@ def run_deep_down_analysis(start_date='20040101', end_date='20250101',
         db_session=db_session
     )
 
+
 def main():
     """主函数"""
     # 示例：运行深度下跌策略分析并输出到CSV
@@ -60,6 +57,7 @@ def main():
         output_mode=output.OutputMode.CSV,
         filename='deep_down_analysis_2024.csv'
     )
+
 
 if __name__ == '__main__':
     main()

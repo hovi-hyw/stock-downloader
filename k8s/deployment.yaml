@@ -1,0 +1,64 @@
+# k8s/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-data-service
+spec:
+  replicas: 3  # 根据您的需求调整副本数量
+  selector:
+    matchLabels:
+      app: stock-data-service
+  template:
+    metadata:
+      labels:
+        app: stock-data-service
+    spec:
+      containers:
+        - name: stock-data-service
+          image: your-docker-repo/stock-data-service:latest  # 替换为您的 Docker 镜像
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              value: postgresql://si:jojo@your-postgres-service:5432/stock  # 替换为您的 PostgreSQL 服务地址
+            - name: MAX_WORKERS
+              value: "4"
+            - name: BATCH_SIZE
+              value: "100"
+            - name: API_RETRY_COUNT
+              value: "3"
+            - name: API_RETRY_DELAY
+              value: "1"
+            - name: LOG_LEVEL
+              value: "INFO"
+            - name: MAX_CSV_AGE_DAYS
+              value: "100"
+            - name: CACHE_PATH
+              value: "cache"
+            - name: MAX_RETRIES
+              value: "3"
+            - name: RETRY_DELAY
+              value: "5"
+            - name: GET_TIMEOUT
+              value: "10"
+            - name: MAX_THREADS
+              value: "12"
+          resources:
+            requests:
+              cpu: "100m"  # 根据您的需求调整资源请求
+              memory: "256Mi"
+            limits:
+              cpu: "500m"  # 根据您的需求调整资源限制
+              memory: "512Mi"
+      # livenessProbe:  # 添加健康检查探针
+      #   httpGet:
+      #     path: /health  # 健康检查路径，需要在 FastAPI 应用中定义
+      #     port: 8000
+      #   initialDelaySeconds: 30
+      #   periodSeconds: 10
+      # readinessProbe: # 添加就绪检查探针
+      #   httpGet:
+      #     path: /health  # 健康检查路径，需要在 FastAPI 应用中定义
+      #     port: 8000
+      #   initialDelaySeconds: 30
+      #   periodSeconds: 10

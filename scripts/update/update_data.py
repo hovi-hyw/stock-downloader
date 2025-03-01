@@ -1,16 +1,18 @@
-from datetime import datetime, date
-import pandas as pd
+import os
+from datetime import date
 
-from src.services.data_fetcher import DataFetcher
-from src.services.data_saver import DataSaver
-from src.core.config import config
-from src.core.logger import logger
-from src.utils.db_utils import initialize_database_if_needed
+import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.database.models.stock import StockDailyData
+
+from src.core.config import config
+from src.core.logger import logger
 from src.database.models.index import IndexDailyData
-import os
+from src.database.models.stock import StockDailyData
+from src.services.data_fetcher import DataFetcher
+from src.services.data_saver import DataSaver
+from src.utils.db_utils import initialize_database_if_needed
+
 
 def get_latest_date_from_db(engine, table_model):
     """从数据库中获取最新的日期"""
@@ -24,6 +26,7 @@ def get_latest_date_from_db(engine, table_model):
             return None
     finally:
         db.close()
+
 
 def update_data(engine, fetcher, saver, table_model, fetch_function, save_function, symbol_list, symbol_key):
     """更新数据"""

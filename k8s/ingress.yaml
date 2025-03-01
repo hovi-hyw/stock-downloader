@@ -1,0 +1,20 @@
+# k8s/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stock-data-service
+  annotations:
+    kubernetes.io/ingress.class: nginx  # 使用 Nginx Ingress Controller
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - host: your-domain.com  # 替换为您的域名
+      http:
+        paths:
+          - path: /stock-data(/|$)(.*)  # 替换为您的路径
+            pathType: Prefix
+            backend:
+              service:
+                name: stock-data-service
+                port:
+                  number: 8000

@@ -1,8 +1,10 @@
 import os
+import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
+
 from src.core.logger import logger
-import subprocess
+
 
 def run_script(script_name):
     """运行指定的 Python 脚本"""
@@ -17,6 +19,7 @@ def run_script(script_name):
         logger.error(f"脚本 {script_name} 运行出错: {e}")
     except FileNotFoundError:
         logger.error(f"Python 解释器未找到，请确保 Python 已安装并添加到 PATH 环境变量。")
+
 
 def main():
     scripts_to_run = [
@@ -33,6 +36,7 @@ def main():
                 logger.error(f"脚本执行失败: {e}")
 
     logger.info("所有数据下载任务完成")
+
 
 if __name__ == "__main__":
     main()

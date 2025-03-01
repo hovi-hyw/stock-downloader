@@ -1,9 +1,8 @@
-import akshare as ak
-from sqlalchemy import create_engine, MetaData, Table, Column, String, Float, Date, Integer
-import pandas as pd
 import time
-from src.core.config import config
-from datetime import datetime
+
+import akshare as ak
+import pandas as pd
+
 
 def get_concept_board_names():
     """获取概念板块名称和代码"""
@@ -21,7 +20,7 @@ def get_concept_board_data(symbol, board_name):
     print(f"尝试获取板块代码为 {symbol} ({board_name}) 的历史数据...")  # 调试信息
 
     try:
-        hist_df = ak.stock_board_concept_hist_em(symbol=board_name,start_date='20250201',end_date='20990101')
+        hist_df = ak.stock_board_concept_hist_em(symbol=board_name, start_date='20250201', end_date='20990101')
         print("DONE!!!")
     except IndexError as e:
         print(f"Error: 获取板块 {board_name} ({symbol}) 历史数据时发生 IndexError: {e}")
@@ -47,7 +46,8 @@ def get_concept_board_data(symbol, board_name):
             return None
 
         # 选择需要的列并重新排序
-        hist_df_selected = hist_df[[ '板块名称', '板块代码', '日期', '涨跌幅', '总市值', '换手率', '上涨家数', '下跌家数', '上涨比例']]
+        hist_df_selected = hist_df[
+            ['板块名称', '板块代码', '日期', '涨跌幅', '总市值', '换手率', '上涨家数', '下跌家数', '上涨比例']]
         return hist_df_selected
     else:
         print(f"获取板块 {board_name} ({symbol}) 历史数据失败或无数据 (DataFrame 为空).")
@@ -69,7 +69,7 @@ def showdata():
             hist_data_df = get_concept_board_data(symbol=board_code, board_name=board_name)
             if hist_data_df is not None and not hist_data_df.empty:
                 print(hist_data_df)
-            time.sleep(1) # 建议添加延时，避免请求过快被限制
+            time.sleep(1)  # 建议添加延时，避免请求过快被限制
             print(f"概念板块: {board_name} ({board_code}) 处理完成.")
     else:
         print("获取概念板块名称失败或无数据。")

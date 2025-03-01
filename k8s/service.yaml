@@ -1,0 +1,14 @@
+# k8s/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-data-service
+spec:
+  selector:
+    app: stock-data-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer  # 如果您在云环境中运行，可以使用 LoadBalancer 类型
+  # type: NodePort      # 如果您在本地或私有云环境中运行，可以使用 NodePort 类型
