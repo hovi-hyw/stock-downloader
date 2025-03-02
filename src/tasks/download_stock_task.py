@@ -14,7 +14,6 @@ from src.core.config import config
 from src.core.logger import logger
 from src.services.data_fetcher import DataFetcher
 from src.services.data_saver import DataSaver
-from src.utils.db_utils import initialize_database_if_needed
 
 
 def download_stock_task(symbol: str):
@@ -24,7 +23,6 @@ def download_stock_task(symbol: str):
     Args:
         symbol (str): 股票代码。
     """
-    initialize_database_if_needed()  # 初始化数据库检查
     fetcher = DataFetcher()
     saver = DataSaver()
 
@@ -43,7 +41,6 @@ def download_all_stock_data():
     """
     下载所有股票的日线数据，并保存到数据库。
     """
-    initialize_database_if_needed()  # 初始化数据库检查
     fetcher = DataFetcher()
     saver = DataSaver()
     # 获取股票列表

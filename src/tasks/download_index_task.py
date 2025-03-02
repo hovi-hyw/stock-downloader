@@ -14,7 +14,6 @@ from src.core.config import config
 from src.core.logger import logger
 from src.services.data_fetcher import DataFetcher
 from src.services.data_saver import DataSaver
-from src.utils.db_utils import initialize_database_if_needed
 
 
 def format_index_code(symbol):
@@ -52,7 +51,6 @@ def download_all_index_data():
     """
     下载所有指数的日线数据，并保存到数据库。
     """
-    initialize_database_if_needed()  # 初始化数据库检查
     fetcher = DataFetcher()
     saver = DataSaver()
 
