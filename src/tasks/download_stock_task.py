@@ -29,7 +29,7 @@ def download_stock_task(symbol: str):
     saver = DataSaver()
 
     try:
-        stock_data = fetcher.fetch_stock_daily_data(symbol, "20240101", datetime.today().strftime("%Y%m%d"), 'hfq')
+        stock_data = fetcher.fetch_stock_daily_data(symbol, "20040101", datetime.today().strftime("%Y%m%d"), 'hfq')
         if stock_data is not None and not stock_data.empty:
             saver.save_stock_daily_data_to_db(stock_data, symbol)
             logger.info(f"股票 {symbol} 日数据下载并保存完成")
