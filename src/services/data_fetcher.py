@@ -64,7 +64,7 @@ class DataFetcher:
         """
         try:
             logger.info("Fetching index list from EastMoney...")
-            index_list = ak.stock_zh_index_spot_em(symbol="沪深重要指数")
+            index_list = ak.stock_zh_index_spot_em(symbol=config.INDICES_NAMES)
             return index_list
         except Exception as e:
             logger.error(f"Failed to fetch index list: {e}")

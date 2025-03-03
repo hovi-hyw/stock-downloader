@@ -17,7 +17,7 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
 
-class Config:
+class Settings:
     """
     配置类。
     该类存储应用程序的所有配置信息，包括数据库连接信息、日志级别、API 重试次数等。
@@ -68,6 +68,9 @@ class Config:
     # 并行线程数
     MAX_THREADS = int(os.getenv("MAX_THREADS", 10))
 
+    # 下载配置
+    INDICES_NAMES= os.getenv("INDICES_NAMES", "沪深重要指数")
+    START_DATE = os.getenv("START_DATE","19900101")
 
 # 实例化配置对象
-config = Config()
+config = Settings()
