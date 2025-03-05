@@ -35,7 +35,7 @@ def download_index_data(symbol: str, name: str):
     try:
         index_data = fetcher.fetch_index_daily_data(
             formatted_symbol,
-            "20040101",
+            config.START_DATE,
             datetime.today().strftime("%Y%m%d")
         )
         if index_data is None:
