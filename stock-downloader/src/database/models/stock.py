@@ -14,12 +14,25 @@ class StockDailyData(Base):
     low = Column(Float)  # 最低价
     volume = Column(Float)  # 成交量
     amount = Column(Float)  # 成交额
-    outstanding_share = Column(Float)  # 流通股本stock.py
+    outstanding_share = Column(Float)  # 流通股本
     turnover = Column(Float)  # 换手率
 
     __table_args__ = (
         PrimaryKeyConstraint('symbol', 'date'),
     )
+
+    # 定义字段映射关系，用于DataFrame转换
+    column_mappings = {
+        'date': 'date',
+        'open': 'open',
+        'close': 'close',
+        'high': 'high',
+        'low': 'low',
+        'volume': 'volume',
+        'amount': 'amount',
+        'outstanding_share': 'outstanding_share',
+        'turnover': 'turnover'
+    }
 
     def __repr__(self):
         return f"<StockDailyData(symbol={self.symbol}, date={self.date})>"
