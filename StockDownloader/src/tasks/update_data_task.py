@@ -7,13 +7,19 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from ..core.config import config
-from ..core.logger import logger
-from ..database.models.index import IndexDailyData
-from ..database.models.stock import StockDailyData
-from ..services.data_fetcher import DataFetcher
-from ..services.data_saver import DataSaver
-from ..utils.db_utils import initialize_database_if_needed
+import sys
+import os
+
+# 添加项目根目录到Python路径
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
+
+from StockDownloader.src.core.config import config
+from StockDownloader.src.core.logger import logger
+from StockDownloader.src.database.models.index import IndexDailyData
+from StockDownloader.src.database.models.stock import StockDailyData
+from StockDownloader.src.services.data_fetcher import DataFetcher
+from StockDownloader.src.services.data_saver import DataSaver
+from StockDownloader.src.utils.db_utils import initialize_database_if_needed
 
 
 def get_latest_date_from_db(engine, table_model):
@@ -57,12 +63,15 @@ def update_data(engine, fetcher, saver, table_model, fetch_function, save_functi
 
 def update_all_data():
     initialize_database_if_needed()
-    engine = create_engine(config.DATABASE_URL)
+    # 确保 DATABASE_URL 不为空，否则抛出异常
+    if config.DATABASE_URL is None:
+        raise ValueError("数据库连接URL不能为空")
+    engine = create_engine(str(config.DATABASE_URL))
     fetcher = DataFetcher()
     saver = DataSaver()
 
     # 更新股票数据
-    stock_list_file = os.path.join(config.CACHE_PATH, "stock_list.csv")
+    stock_list_file = os.path.join(os.getcwd(), "cache", "stock_list.csv")
     stock_list = pd.read_csv(stock_list_file)
     update_data(
         engine,
@@ -76,7 +85,7 @@ def update_all_data():
     )
 
     # 更新指数数据
-    index_list_file = os.path.join(config.CACHE_PATH, "index_list.csv")
+    index_list_file = os.path.join(os.getcwd(), "cache", "index_list.csv")
     index_list = pd.read_csv(index_list_file)
     update_data(
         engine,
