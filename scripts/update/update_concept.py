@@ -1,10 +1,10 @@
 import os
 from datetime import datetime
 
-from src.core.config import config
-from src.core.logger import logger
-from src.services.data_fetcher import DataFetcher
-from src.services.data_saver import DataSaver
+from StockDownloader.src.core.config import config
+from StockDownloader.src.core.logger import logger
+from StockDownloader.src.services.data_fetcher import DataFetcher
+from StockDownloader.src.services.data_saver import DataSaver
 
 
 def is_file_from_today(file_path):

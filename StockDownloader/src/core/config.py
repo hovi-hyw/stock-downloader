@@ -32,10 +32,6 @@ class Settings:
         GET_TIMEOUT (int): API 请求超时时间（秒）。
         MAX_THREADS (int): 最大线程数。
 
-    Examples:
-        >>> from src.core.config import config
-        >>> print(config.DATABASE_URL)
-        postgresql://si:jojo@localhost:5432/stock
     """
     # 基础路径配置
     PROJECT_ROOT = PROJECT_ROOT

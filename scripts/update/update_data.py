@@ -5,13 +5,13 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.core.config import config
-from src.core.logger import logger
-from src.database.models.index import IndexDailyData
-from src.database.models.stock import StockDailyData
-from src.services.data_fetcher import DataFetcher
-from src.services.data_saver import DataSaver
-from src.utils.db_utils import initialize_database_if_needed
+from StockDownloader.src.core.config import config
+from StockDownloader.src.core.logger import logger
+from StockDownloader.src.database.models.index import IndexDailyData
+from StockDownloader.src.database.models.stock import StockDailyData
+from StockDownloader.src.services.data_fetcher import DataFetcher
+from StockDownloader.src.services.data_saver import DataSaver
+from StockDownloader.src.utils.db_utils import initialize_database_if_needed
 
 
 def get_latest_date_from_db(engine, table_model):

@@ -57,7 +57,7 @@ def download_all_index_data():
     # 获取指数列表
     index_list_file = config.CACHE_PATH + "/index_list.csv"
     max_age = config.MAX_CSV_AGE_DAYS
-    from src.utils.file_utils import check_file_validity
+    from ..utils.file_utils import check_file_validity
     if check_file_validity(index_list_file, max_age):
         logger.info("从缓存读取指数列表")
         index_list = pd.read_csv(index_list_file)
