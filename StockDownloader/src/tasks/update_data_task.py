@@ -61,6 +61,60 @@ def update_data(engine, fetcher, saver, table_model, fetch_function, save_functi
             logger.error(f"更新 {symbol} 数据出错: {e}")
 
 
+def update_stock_data():
+    """只更新股票数据"""
+    initialize_database_if_needed()
+    # 确保 DATABASE_URL 不为空，否则抛出异常
+    if config.DATABASE_URL is None:
+        raise ValueError("数据库连接URL不能为空")
+    engine = create_engine(str(config.DATABASE_URL))
+    fetcher = DataFetcher()
+    saver = DataSaver()
+
+    # 更新股票数据
+    stock_list_file = os.path.join(os.getcwd(), "cache", "stock_list.csv")
+    stock_list = pd.read_csv(stock_list_file)
+    update_data(
+        engine,
+        fetcher,
+        saver,
+        StockDailyData,
+        fetcher.fetch_stock_daily_data,
+        saver.save_stock_daily_data_to_db,
+        stock_list,
+        "代码"
+    )
+    
+    logger.info("股票数据更新任务完成")
+
+
+def update_index_data():
+    """只更新指数数据"""
+    initialize_database_if_needed()
+    # 确保 DATABASE_URL 不为空，否则抛出异常
+    if config.DATABASE_URL is None:
+        raise ValueError("数据库连接URL不能为空")
+    engine = create_engine(str(config.DATABASE_URL))
+    fetcher = DataFetcher()
+    saver = DataSaver()
+
+    # 更新指数数据
+    index_list_file = os.path.join(os.getcwd(), "cache", "index_list.csv")
+    index_list = pd.read_csv(index_list_file)
+    update_data(
+        engine,
+        fetcher,
+        saver,
+        IndexDailyData,
+        fetcher.fetch_index_daily_data,
+        saver.save_index_daily_data_to_db,
+        index_list,
+        "代码"
+    )
+    
+    logger.info("指数数据更新任务完成")
+
+
 def update_all_data():
     initialize_database_if_needed()
     # 确保 DATABASE_URL 不为空，否则抛出异常

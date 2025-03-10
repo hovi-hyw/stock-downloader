@@ -3,7 +3,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+temp.ipynb
 # C extensions
 *.so
 data/*.csv
