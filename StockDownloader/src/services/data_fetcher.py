@@ -7,6 +7,7 @@ Date: 2024-07-03
 """
 
 import time
+import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from datetime import datetime, timedelta
 
@@ -170,13 +171,24 @@ class DataFetcher:
             DataFetchError: 如果获取指数日线数据失败，则抛出此异常。
         """
         logger.info(f"Fetching daily data for index {symbol} from {start_date} to {end_date}...")
-        return self._fetch_with_retry(
-            ak.index_zh_a_hist,  # 修改为东财的历史数据接口
-            symbol=symbol,
-            start_date=start_date,
-            end_date=end_date,
-            period="daily"
-        )
+        try:
+            # 确保symbol是字符串格式
+            symbol = str(symbol)
+            # 对于纯数字的指数代码，确保格式正确（如：000001而不是1）
+            if symbol.isdigit() and len(symbol) < 6:
+                symbol = symbol.zfill(6)  # 补齐6位
+                
+            return self._fetch_with_retry(
+                ak.index_zh_a_hist,  # 修改为东财的历史数据接口
+                symbol=symbol,
+                start_date=start_date,
+                end_date=end_date,
+                period="daily"
+            )
+        except Exception as e:
+            logger.error(f"Failed to fetch index data for {symbol}: {e}")
+            # 返回空DataFrame而不是抛出异常，让调用者决定如何处理
+            return pd.DataFrame()
 
     def fetch_concept_board_list(self):
         """获取概念板块列表"""

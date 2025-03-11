@@ -52,10 +52,25 @@ def update_data(engine, fetcher, saver, table_model, fetch_function, save_functi
         logger.info(f"数据库已是最新，无需更新")
         return
 
-    for symbol in symbol_list[symbol_key]:
+    for _, row in symbol_list.iterrows():
+        # 确保股票/指数代码始终以字符串形式处理，并且保留前导零
+        symbol = str(row[symbol_key]).strip()
+        # 对于纯数字的指数代码，确保格式正确（如：000001而不是1）
+        if table_model == IndexDailyData and symbol.isdigit() and len(symbol) < 6:
+            symbol = symbol.zfill(6)  # 补齐6位
+            
         try:
             data = fetch_function(symbol, start_date, end_date)
-            save_function(data, symbol)
+            # 检查返回的数据是否为None或空
+            if data is None or data.empty:
+                logger.warning(f"获取 {symbol} 的数据为空，跳过保存")
+                continue
+                
+            # 判断是否为指数数据，如果是则传递index_name参数
+            if table_model == IndexDailyData and '名称' in row:
+                save_function(data, symbol, row['名称'])
+            else:
+                save_function(data, symbol)
             logger.info(f"{symbol} 数据更新完成")
         except Exception as e:
             logger.error(f"更新 {symbol} 数据出错: {e}")
@@ -73,7 +88,16 @@ def update_stock_data():
 
     # 更新股票数据
     stock_list_file = os.path.join(os.getcwd(), "cache", "stock_list.csv")
-    stock_list = pd.read_csv(stock_list_file)
+    
+    # 直接检查文件是否存在，不再检查文件的有效期
+    if os.path.exists(stock_list_file):
+        logger.info("从缓存读取股票列表")
+        stock_list = pd.read_csv(stock_list_file)
+    else:
+        logger.info("从API获取股票列表")
+        stock_list = fetcher.fetch_stock_list()
+        saver.save_stock_list_to_csv(stock_list, stock_list_file)
+        
     update_data(
         engine,
         fetcher,
@@ -100,7 +124,16 @@ def update_index_data():
 
     # 更新指数数据
     index_list_file = os.path.join(os.getcwd(), "cache", "index_list.csv")
-    index_list = pd.read_csv(index_list_file)
+    
+    # 直接检查文件是否存在，不再检查文件的有效期
+    if os.path.exists(index_list_file):
+        logger.info("从缓存读取指数列表")
+        index_list = pd.read_csv(index_list_file)
+    else:
+        logger.info("从东方财富获取指数列表")
+        index_list = fetcher.fetch_index_list()
+        saver.save_index_list_to_csv(index_list, index_list_file)
+    
     update_data(
         engine,
         fetcher,
@@ -126,7 +159,16 @@ def update_all_data():
 
     # 更新股票数据
     stock_list_file = os.path.join(os.getcwd(), "cache", "stock_list.csv")
-    stock_list = pd.read_csv(stock_list_file)
+    
+    # 直接检查文件是否存在，不再检查文件的有效期
+    if os.path.exists(stock_list_file):
+        logger.info("从缓存读取股票列表")
+        stock_list = pd.read_csv(stock_list_file)
+    else:
+        logger.info("从API获取股票列表")
+        stock_list = fetcher.fetch_stock_list()
+        saver.save_stock_list_to_csv(stock_list, stock_list_file)
+        
     update_data(
         engine,
         fetcher,
@@ -140,7 +182,16 @@ def update_all_data():
 
     # 更新指数数据
     index_list_file = os.path.join(os.getcwd(), "cache", "index_list.csv")
-    index_list = pd.read_csv(index_list_file)
+    
+    # 直接检查文件是否存在，不再检查文件的有效期
+    if os.path.exists(index_list_file):
+        logger.info("从缓存读取指数列表")
+        index_list = pd.read_csv(index_list_file)
+    else:
+        logger.info("从东方财富获取指数列表")
+        index_list = fetcher.fetch_index_list()
+        saver.save_index_list_to_csv(index_list, index_list_file)
+        
     update_data(
         engine,
         fetcher,
@@ -156,4 +207,4 @@ def update_all_data():
 
 
 if __name__ == "__main__":
-    update_all_data()
+    update_index_data()
