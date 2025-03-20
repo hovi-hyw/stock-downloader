@@ -9,12 +9,12 @@ Date: 2024-07-03
 import pandas as pd
 from sqlalchemy.orm import Session
 
-from ..core.exceptions import DataSaveError
-from ..core.logger import logger
-from ..database.models.concept import ConceptBoardData
-from ..database.models.index import IndexDailyData
-from ..database.models.stock import StockDailyData
-from ..database.session import get_db
+from StockDownloader.src.core.exceptions import DataSaveError
+from StockDownloader.src.core.logger import logger
+from StockDownloader.src.database.models.concept import ConceptBoardData
+from StockDownloader.src.database.models.index import IndexDailyData
+from StockDownloader.src.database.models.stock import StockDailyData
+from StockDownloader.src.database.session import get_db
 
 
 class DataSaver:
@@ -35,6 +35,13 @@ class DataSaver:
             DataSaveError: 如果保存股票列表到 CSV 文件失败，则抛出此异常。
         """
         try:
+            # 确保目录存在
+            import os
+            directory = os.path.dirname(file_path)
+            if not os.path.exists(directory):
+                logger.info(f"Directory '{directory}' does not exist, creating it...")
+                os.makedirs(directory, exist_ok=True)
+                
             logger.info(f"Saving stock list to {file_path}...")
             stock_list.to_csv(file_path, index=False)
         except Exception as e:
@@ -53,6 +60,13 @@ class DataSaver:
             DataSaveError: 如果保存指数列表到 CSV 文件失败，则抛出此异常。
         """
         try:
+            # 确保目录存在
+            import os
+            directory = os.path.dirname(file_path)
+            if not os.path.exists(directory):
+                logger.info(f"Directory '{directory}' does not exist, creating it...")
+                os.makedirs(directory, exist_ok=True)
+                
             logger.info(f"Saving index list to {file_path}...")
             index_list.to_csv(file_path, index=False)
         except Exception as e:
@@ -175,6 +189,13 @@ class DataSaver:
         保存概念板块列表到CSV文件
         """
         try:
+            # 确保目录存在
+            import os
+            directory = os.path.dirname(file_path)
+            if not os.path.exists(directory):
+                logger.info(f"Directory '{directory}' does not exist, creating it...")
+                os.makedirs(directory, exist_ok=True)
+                
             logger.info(f"Saving concept board list to {file_path}...")
             concept_list.to_csv(file_path, index=False)
         except Exception as e:

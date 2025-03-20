@@ -87,7 +87,7 @@ def update_stock_data():
     saver = DataSaver()
 
     # 更新股票数据
-    stock_list_file = os.path.join(os.getcwd(), "cache", "stock_list.csv")
+    stock_list_file = os.path.join(os.getcwd(), "cache", "stock_list250317.csv")
     
     # 直接检查文件是否存在，不再检查文件的有效期
     if os.path.exists(stock_list_file):
@@ -158,7 +158,7 @@ def update_all_data():
     saver = DataSaver()
 
     # 更新股票数据
-    stock_list_file = os.path.join(os.getcwd(), "cache", "stock_list.csv")
+    stock_list_file = os.path.join(os.getcwd(), "cache", "stock_list250317.csv")
     
     # 直接检查文件是否存在，不再检查文件的有效期
     if os.path.exists(stock_list_file):
@@ -207,4 +207,4 @@ def update_all_data():
 
 
 if __name__ == "__main__":
-    update_index_data()
+    update_stock_data()

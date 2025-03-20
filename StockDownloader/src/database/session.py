@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from ..core.config import config
-from .base import Base
+from StockDownloader.src.core.config import config
+from StockDownloader.src.database.base import Base
 
 # 创建数据库引擎
 engine = create_engine(config.DATABASE_URL)

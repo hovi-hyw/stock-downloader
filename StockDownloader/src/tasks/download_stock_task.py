@@ -44,7 +44,7 @@ def download_all_stock_data():
     fetcher = DataFetcher()
     saver = DataSaver()
     # 获取股票列表
-    stock_list_file = config.CACHE_PATH + "/stock_list.csv"
+    stock_list_file = config.CACHE_PATH + "/stock_list250317.csv"
     max_age = config.MAX_CSV_AGE_DAYS
     from ..utils.file_utils import check_file_validity
     if check_file_validity(stock_list_file, max_age):
