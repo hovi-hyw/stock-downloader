@@ -9,6 +9,7 @@
 *   下载股票日线数据
 *   下载指数日线数据
 *   存储数据到 PostgreSQL 数据库
+*   支持数据可视化与分析系统
 
 ## 快速开始
 
@@ -68,6 +69,40 @@
 ## 使用
 
 *   运行 `src/main.py` 文件，它将下载股票和指数数据并保存到数据库。
+
+## 数据库结构
+
+### 股票日线数据表 (daily_stock)
+
+| 字段名 | 类型 | 描述 |
+| --- | --- | --- |
+| symbol | String | 股票代码 (主键之一) |
+| date | Date | 日期 (主键之一) |
+| open | Float | 开盘价 |
+| close | Float | 收盘价 |
+| high | Float | 最高价 |
+| low | Float | 最低价 |
+| volume | BigInteger | 成交量 |
+| amount | BigInteger | 成交额 |
+| outstanding_share | Float | 流通股本 |
+| turnover | Float | 换手率 |
+
+### 指数日线数据表 (daily_index)
+
+| 字段名 | 类型 | 描述 |
+| --- | --- | --- |
+| symbol | String | 指数代码 (主键之一) |
+| date | Date | 日期 (主键之一) |
+| open | Float | 开盘价 |
+| close | Float | 收盘价 |
+| high | Float | 最高价 |
+| low | Float | 最低价 |
+| volume | BigInteger | 成交量 |
+| amount | BigInteger | 成交额 |
+| amplitude | Float | 振幅 |
+| change_rate | Float | 涨跌幅 |
+| change_amount | Float | 涨跌额 |
+| turnover_rate | Float | 换手率 |
 
 ## 贡献
 
