@@ -178,30 +178,6 @@ class DataFetcher:
             period="daily"
         )
 
-    def fetch_concept_board_list(self):
-        """获取概念板块列表"""
-        try:
-            logger.info("Fetching concept board list...")
-            return self._fetch_with_retry(ak.stock_board_concept_name_em)
-        except Exception as e:
-            logger.error(f"Failed to fetch concept board list: {e}")
-            raise DataFetchError(f"Failed to fetch concept board list: {e}")
-
-    def fetch_concept_board_daily_data(self, board_name, adjust, start_date='20220101', end_date='20310101'):
-        """获取概念板块历史数据"""
-        try:
-            logger.info(f"Fetching daily data in mode {adjust} : for concept board {board_name}...")
-            return self._fetch_with_retry(
-                ak.stock_board_concept_hist_em,
-                symbol=board_name,
-                start_date=start_date,  # 这里要想办法解决一下，起始时间如何根据API来确定？
-                end_date=end_date,
-                adjust=adjust
-            )
-
-        except Exception as e:
-            logger.error(f"Failed to fetch concept board data: {e}")
-            raise DataFetchError(f"Failed to fetch concept board data: {e}")
 
     def get_last_n_days(self, n):
         """
