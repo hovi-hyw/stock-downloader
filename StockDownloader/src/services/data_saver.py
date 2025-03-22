@@ -9,12 +9,11 @@ Date: 2024-07-03
 import pandas as pd
 from sqlalchemy.orm import Session
 
-from StockDownloader.src.core.exceptions import DataSaveError
-from StockDownloader.src.core.logger import logger
-from StockDownloader.src.database.models.concept import ConceptBoardData
-from StockDownloader.src.database.models.index import IndexDailyData
-from StockDownloader.src.database.models.stock import StockDailyData
-from StockDownloader.src.database.session import get_db
+from ..core.exceptions import DataSaveError
+from ..core.logger import logger
+from ..database.models.index import IndexDailyData
+from ..database.models.stock import StockDailyData
+from ..database.session import get_db
 
 
 class DataSaver:
@@ -35,13 +34,6 @@ class DataSaver:
             DataSaveError: 如果保存股票列表到 CSV 文件失败，则抛出此异常。
         """
         try:
-            # 确保目录存在
-            import os
-            directory = os.path.dirname(file_path)
-            if not os.path.exists(directory):
-                logger.info(f"Directory '{directory}' does not exist, creating it...")
-                os.makedirs(directory, exist_ok=True)
-                
             logger.info(f"Saving stock list to {file_path}...")
             stock_list.to_csv(file_path, index=False)
         except Exception as e:
@@ -60,13 +52,6 @@ class DataSaver:
             DataSaveError: 如果保存指数列表到 CSV 文件失败，则抛出此异常。
         """
         try:
-            # 确保目录存在
-            import os
-            directory = os.path.dirname(file_path)
-            if not os.path.exists(directory):
-                logger.info(f"Directory '{directory}' does not exist, creating it...")
-                os.makedirs(directory, exist_ok=True)
-                
             logger.info(f"Saving index list to {file_path}...")
             index_list.to_csv(file_path, index=False)
         except Exception as e:
@@ -153,7 +138,7 @@ class DataSaver:
                         existing_record.high = row["最高"]
                         existing_record.low = row["最低"]
                         existing_record.volume = row["成交量"]
-                        existing_record.amount = row["成交额"] / 10000.0
+                        existing_record.amount = row["成交额"]
                         existing_record.amplitude = row["振幅"]
                         existing_record.change_rate = row["涨跌幅"]
                         existing_record.change_amount = row["涨跌额"]
@@ -169,7 +154,7 @@ class DataSaver:
                         high=row["最高"],
                         low=row["最低"],
                         volume=row["成交量"],
-                        amount=row["成交额"] / 10000.0,
+                        amount=row["成交额"],
                         amplitude=row["振幅"],
                         change_rate=row["涨跌幅"],
                         change_amount=row["涨跌额"],
@@ -183,71 +168,3 @@ class DataSaver:
             db.rollback()
             logger.error(f"Failed to save daily data for index {symbol} to database: {e}")
             raise DataSaveError(f"Failed to save daily data for index {symbol} to database: {e}")
-
-    def save_concept_board_list_to_csv(self, concept_list, file_path):
-        """
-        保存概念板块列表到CSV文件
-        """
-        try:
-            # 确保目录存在
-            import os
-            directory = os.path.dirname(file_path)
-            if not os.path.exists(directory):
-                logger.info(f"Directory '{directory}' does not exist, creating it...")
-                os.makedirs(directory, exist_ok=True)
-                
-            logger.info(f"Saving concept board list to {file_path}...")
-            concept_list.to_csv(file_path, index=False)
-        except Exception as e:
-            logger.error(f"Failed to save concept board list to CSV: {e}")
-            raise DataSaveError(f"Failed to save concept board list to CSV: {e}")
-
-    def save_concept_board_data_to_db(self, board_data, concept_name, concept_code):
-        """
-        保存概念板块历史数据到数据库
-        """
-        try:
-            logger.info(f"Saving daily data for concept board {concept_name} to database...")
-            db: Session = next(get_db())
-
-            for _, row in board_data.iterrows():
-                # 转换日期格式
-                row_date = pd.to_datetime(row["日期"], errors='coerce').date()
-                if pd.isna(row_date):
-                    logger.warning(f"Invalid date format: {row['日期']}")
-                    continue
-
-                # 检查记录是否存在
-                existing_record = db.query(ConceptBoardData).filter_by(
-                    concept_code=concept_code,
-                    date=row_date
-                ).first()
-
-                data = {
-                    'concept_name': concept_name,
-                    'concept_code': concept_code,
-                    'date': row_date,
-                    'open': row["开盘"],
-                    'close': row["收盘"],
-                    'high': row["最高"],
-                    'low': row["最低"],
-                    'change_rate': row["涨跌幅"],
-                    'change_amount': row["涨跌额"],
-                    'volume': row["成交量"],
-                    'amount': row["成交额"],
-                    'amplitude': row["振幅"],
-                    'turnover_rate': row["换手率"]
-                }
-
-                if existing_record:
-                    for key, value in data.items():
-                        setattr(existing_record, key, value)
-                else:
-                    db.add(ConceptBoardData(**data))
-
-            db.commit()
-            logger.info(f"Successfully saved data for concept board {concept_name}")
-        except Exception as e:
-            db.rollback()
-            logger.error(f"Failed to save concept board data: {e}")
-            raise DataSaveError(f"Failed to save concept board data: {e}")

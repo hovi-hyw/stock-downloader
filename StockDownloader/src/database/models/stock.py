@@ -1,10 +1,10 @@
-from sqlalchemy import Column, String, Float, Date, PrimaryKeyConstraint
+from sqlalchemy import Column, String, Float, Date, PrimaryKeyConstraint, BigInteger
 
 from ..base import Base
 
 
 class StockDailyData(Base):
-    __tablename__ = "stock_daily_data"
+    __tablename__ = "daily_stock"
 
     symbol = Column(String, nullable=False)  # 股票代码
     date = Column(Date, nullable=False)  # 日期
@@ -12,8 +12,8 @@ class StockDailyData(Base):
     close = Column(Float)  # 收盘价
     high = Column(Float)  # 最高价
     low = Column(Float)  # 最低价
-    volume = Column(Float)  # 成交量
-    amount = Column(Float)  # 成交额
+    volume = Column(BigInteger)  # 成交量
+    amount = Column(BigInteger)  # 成交额
     outstanding_share = Column(Float)  # 流通股本
     turnover = Column(Float)  # 换手率
 
