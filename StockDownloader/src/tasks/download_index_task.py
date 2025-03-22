@@ -65,6 +65,10 @@ def download_all_index_data():
         logger.info("从东方财富获取指数列表")
         index_list = fetcher.fetch_index_list()
         saver.save_index_list_to_csv(index_list, index_list_file)
+    
+    # 保存指数基本信息到数据库
+    logger.info("保存指数基本信息到数据库")
+    saver.save_index_info_to_db(index_list)
 
     # 下载指数日数据并保存到数据库
     for _, row in index_list.iterrows():

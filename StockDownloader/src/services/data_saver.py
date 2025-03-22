@@ -8,11 +8,13 @@ Date: 2024-07-03
 
 import pandas as pd
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from ..core.exceptions import DataSaveError
 from ..core.logger import logger
 from ..database.models.index import IndexDailyData
 from ..database.models.stock import StockDailyData
+from ..database.models.info import StockInfo, IndexInfo
 from ..database.session import get_db
 
 
@@ -114,6 +116,100 @@ class DataSaver:
             db.rollback()
             logger.error(f"Failed to save daily data for stock {symbol} to database: {e}")
             raise DataSaveError(f"Failed to save daily data for stock {symbol} to database: {e}")
+
+    def save_stock_info_to_db(self, stock_list):
+        """
+        保存股票基本信息到数据库。
+
+        Args:
+            stock_list (pandas.DataFrame): 包含股票列表的DataFrame，必须包含'代码'和'名称'列。
+
+        Raises:
+            DataSaveError: 如果保存股票基本信息到数据库失败，则抛出此异常。
+        """
+        try:
+            logger.info("Saving stock info to database...")
+            db: Session = next(get_db())
+            inserted_count = 0
+            updated_count = 0
+            
+            for _, row in stock_list.iterrows():
+                symbol = row["代码"]
+                name = row["名称"]
+                
+                # 检查记录是否已存在
+                existing_record = db.query(StockInfo).filter_by(symbol=symbol).first()
+                if existing_record:
+                    # 如果名称有变化，则更新
+                    if existing_record.name != name:
+                        existing_record.name = name
+                        updated_count += 1
+                else:
+                    # 添加新记录
+                    try:
+                        db.add(StockInfo(symbol=symbol, name=name))
+                        inserted_count += 1
+                    except IntegrityError:
+                        # 处理可能的并发插入导致的完整性错误
+                        db.rollback()
+                        existing_record = db.query(StockInfo).filter_by(symbol=symbol).first()
+                        if existing_record and existing_record.name != name:
+                            existing_record.name = name
+                            updated_count += 1
+            
+            db.commit()
+            logger.info(f"Inserted {inserted_count} and updated {updated_count} stock info records.")
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Failed to save stock info to database: {e}")
+            raise DataSaveError(f"Failed to save stock info to database: {e}")
+
+    def save_index_info_to_db(self, index_list):
+        """
+        保存指数基本信息到数据库。
+
+        Args:
+            index_list (pandas.DataFrame): 包含指数列表的DataFrame，必须包含'代码'和'名称'列。
+
+        Raises:
+            DataSaveError: 如果保存指数基本信息到数据库失败，则抛出此异常。
+        """
+        try:
+            logger.info("Saving index info to database...")
+            db: Session = next(get_db())
+            inserted_count = 0
+            updated_count = 0
+            
+            for _, row in index_list.iterrows():
+                symbol = str(row["代码"]).zfill(6)  # 确保指数代码为6位
+                name = row["名称"]
+                
+                # 检查记录是否已存在
+                existing_record = db.query(IndexInfo).filter_by(symbol=symbol).first()
+                if existing_record:
+                    # 如果名称有变化，则更新
+                    if existing_record.name != name:
+                        existing_record.name = name
+                        updated_count += 1
+                else:
+                    # 添加新记录
+                    try:
+                        db.add(IndexInfo(symbol=symbol, name=name))
+                        inserted_count += 1
+                    except IntegrityError:
+                        # 处理可能的并发插入导致的完整性错误
+                        db.rollback()
+                        existing_record = db.query(IndexInfo).filter_by(symbol=symbol).first()
+                        if existing_record and existing_record.name != name:
+                            existing_record.name = name
+                            updated_count += 1
+            
+            db.commit()
+            logger.info(f"Inserted {inserted_count} and updated {updated_count} index info records.")
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Failed to save index info to database: {e}")
+            raise DataSaveError(f"Failed to save index info to database: {e}")
 
     def save_index_daily_data_to_db(self, index_data, symbol, index_name):  # 添加 index_name 参数
         """保存指数日数据到数据库"""

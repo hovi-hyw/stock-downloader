@@ -54,6 +54,10 @@ def download_all_stock_data():
         logger.info("从API获取股票列表")
         stock_list = fetcher.fetch_stock_list()
         saver.save_stock_list_to_csv(stock_list, stock_list_file)
+    
+    # 保存股票基本信息到数据库
+    logger.info("保存股票基本信息到数据库")
+    saver.save_stock_info_to_db(stock_list)
 
     # 下载股票日数据并保存到数据库
     for symbol in stock_list["代码"]:
