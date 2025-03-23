@@ -37,14 +37,17 @@ def download_stock_task(symbol: str):
         logger.error(f"下载股票 {symbol} 数据时出错: {e}")
 
 
-def download_all_stock_data():
+def download_all_stock_data(update_only=False):
     """
     下载所有股票的日线数据，并保存到数据库。
+    
+    Args:
+        update_only (bool, optional): 是否只更新最新数据。默认为False，表示下载全部历史数据。
     """
     fetcher = DataFetcher()
     saver = DataSaver()
     # 获取股票列表
-    stock_list_file = config.CACHE_PATH + "/stock_list250317.csv"
+    stock_list_file = config.CACHE_PATH + "/stock_list_latest.csv"
     max_age = config.MAX_CSV_AGE_DAYS
     from ..utils.file_utils import check_file_validity
     if check_file_validity(stock_list_file, max_age):
@@ -60,6 +63,13 @@ def download_all_stock_data():
     saver.save_stock_info_to_db(stock_list)
 
     # 下载股票日数据并保存到数据库
-    for symbol in stock_list["代码"]:
-        download_stock_task(symbol)
-    logger.info("所有股票数据下载任务完成")
+    if update_only:
+        # 如果只更新最新数据，则调用update_stock_data函数
+        from .update_data_task import update_stock_data
+        update_stock_data()
+        logger.info("股票数据增量更新任务完成")
+    else:
+        # 否则下载全部历史数据
+        for symbol in stock_list["代码"]:
+            download_stock_task(symbol)
+        logger.info("所有股票数据下载任务完成")
