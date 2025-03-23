@@ -17,7 +17,7 @@ def display_menu():
     print("5: 只下载股票和指数日线数据")
     print("6: 只更新股票和指数日线数据")
     print("7: 更新stock_info以及index_info表")
-    print("8: 启动完整的API服务和定时任务")
+    print("8: 补全特定股票或指数的历史数据")
     print("0: 退出程序")
     print("-" * 40)
     
@@ -41,10 +41,6 @@ if __name__ == "__main__":
         print("程序已退出")
         sys.exit(0)
     
-    # 如果选择了选项8，则不传递mode参数，启动完整服务
-    if mode == 8:
-        main()
-    else:
-        # 传递用户选择的模式给main函数
-        sys.argv = [sys.argv[0], "--mode", str(mode)]
-        main()
+    # 传递用户选择的模式给main函数
+    sys.argv = [sys.argv[0], "--mode", str(mode)]
+    main()

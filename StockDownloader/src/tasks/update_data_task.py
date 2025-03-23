@@ -1,7 +1,7 @@
 # src/tasks/update_data_task.py
 
 import os
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import pandas as pd
 from sqlalchemy import create_engine
@@ -38,7 +38,7 @@ def get_latest_date_from_db(engine, table_model):
 
 
 def update_data(engine, fetcher, saver, table_model, fetch_function, save_function, symbol_list, symbol_key):
-    """更新数据"""
+    """基于时间范围更新数据，从上次更新日期到当前日期"""
     today = date.today()
     end_date = today.strftime("%Y%m%d")
     
@@ -47,118 +47,71 @@ def update_data(engine, fetcher, saver, table_model, fetch_function, save_functi
     db = SessionLocal()
     
     try:
-        # 如果是更新指数数据，使用常规方式更新
-        if table_model == IndexDailyData:
-            latest_date = get_latest_date_from_db(engine, table_model)
-            
-            if latest_date is None:
-                start_date = "20040101"  # 如果数据库为空，从最早的时间开始
-            else:
-                start_date = latest_date.strftime("%Y%m%d")
-                
-            if start_date == end_date:
-                logger.info(f"指数数据库已是最新，无需更新")
-                return
-                
-            for _, row in symbol_list.iterrows():
-                # 确保指数代码始终以字符串形式处理，并且保留前导零
-                symbol = str(row[symbol_key]).strip()
-                # 对于纯数字的指数代码，确保格式正确（如：000001而不是1）
-                if symbol.isdigit() and len(symbol) < 6:
-                    symbol = symbol.zfill(6)  # 补齐6位
-                    
-                try:
-                    data = fetch_function(symbol, start_date, end_date)
-                    # 检查返回的数据是否为None或空
-                    if data is None or data.empty:
-                        logger.warning(f"获取指数 {symbol} 的数据为空，跳过保存")
-                        continue
-                        
-                    # 传递index_name参数
-                    if '名称' in row:
-                        save_function(data, symbol, row['名称'])
-                    else:
-                        save_function(data, symbol)
-                    logger.info(f"指数 {symbol} 数据更新完成")
-                except Exception as e:
-                    logger.error(f"更新指数 {symbol} 数据出错: {e}")
+        # 获取数据库中最新的日期
+        latest_date = get_latest_date_from_db(engine, table_model)
         
-        # 如果是更新股票数据，基于指数000001的交易日期进行全量比较
+        if latest_date is None:
+            # 如果数据库为空，从配置的起始日期开始
+            start_date = config.START_DATE
+            logger.info(f"数据库为空，从配置的起始日期 {start_date} 开始下载数据")
         else:
-            # 获取指数000001的所有交易日期作为基准
-            index_trading_dates = get_index_trading_dates(db, "000001")
-            if not index_trading_dates:
-                logger.error("无法获取指数000001的交易日期，请先更新指数数据")
-                return
-                
-            logger.info(f"获取到指数000001的交易日期共 {len(index_trading_dates)} 个")
+            # 从最新日期的下一天开始更新
+            next_day = latest_date + timedelta(days=1)
+            start_date = next_day.strftime("%Y%m%d")
+            logger.info(f"从上次更新日期 {latest_date} 的下一天开始更新数据")
+        
+        # 如果开始日期等于或晚于结束日期，则无需更新
+        if start_date >= end_date:
+            logger.info(f"数据库已是最新，无需更新")
+            return
+        
+        logger.info(f"更新数据范围: {start_date} 到 {end_date}")
+        
+        # 遍历所有股票/指数
+        for _, row in symbol_list.iterrows():
+            # 确保代码始终以字符串形式处理
+            symbol = str(row[symbol_key]).strip()
             
-            # 遍历所有股票
-            for _, row in symbol_list.iterrows():
-                # 确保股票代码始终以字符串形式处理
-                symbol = str(row[symbol_key]).strip()
+            # 对于纯数字的代码，确保格式正确（如：000001而不是1）
+            if symbol.isdigit() and len(symbol) < 6:
+                symbol = symbol.zfill(6)  # 补齐6位
+            
+            try:
+                # 获取指定时间范围的数据
+                if table_model == IndexDailyData:
+                    logger.info(f"获取指数 {symbol} 从 {start_date} 到 {end_date} 的数据")
+                else:
+                    logger.info(f"获取股票 {symbol} 从 {start_date} 到 {end_date} 的数据")
                 
-                try:
-                    # 获取该股票在数据库中已有的交易日期
-                    stock_trading_dates = get_stock_trading_dates(db, symbol)
+                # 调用相应的数据获取函数
+                if table_model == StockDailyData:
+                    data = fetch_function(symbol, start_date, end_date, 'hfq')
+                else:
+                    data = fetch_function(symbol, start_date, end_date)
+                
+                # 检查返回的数据是否为None或空
+                if data is None or data.empty:
+                    if table_model == IndexDailyData:
+                        logger.warning(f"获取指数 {symbol} 的数据为空，跳过保存")
+                    else:
+                        logger.warning(f"获取股票 {symbol} 的数据为空，跳过保存")
+                    continue
+                
+                # 保存数据到数据库
+                if table_model == IndexDailyData and '名称' in row:
+                    save_function(data, symbol, row['名称'])
+                else:
+                    save_function(data, symbol)
+                
+                if table_model == IndexDailyData:
+                    logger.info(f"指数 {symbol} 数据更新完成")
+                else:
+                    logger.info(f"股票 {symbol} 数据更新完成")
                     
-                    # 计算缺失的交易日期
-                    missing_dates = index_trading_dates - stock_trading_dates
-                    
-                    if not missing_dates:
-                        logger.info(f"股票 {symbol} 数据已完整，无需更新")
-                        continue
-                        
-                    logger.info(f"股票 {symbol} 缺失 {len(missing_dates)} 个交易日期的数据")
-                    
-                    # 按时间顺序排序缺失的日期
-                    sorted_missing_dates = sorted(missing_dates)
-                    
-                    # 将缺失日期分组为连续的时间段，减少API调用次数
-                    date_ranges = []
-                    if sorted_missing_dates:
-                        start = sorted_missing_dates[0]
-                        end = start
-                        
-                        for i in range(1, len(sorted_missing_dates)):
-                            current = sorted_missing_dates[i]
-                            prev = sorted_missing_dates[i-1]
-                            
-                            # 如果日期连续（相差一天），则扩展当前范围
-                            if (current - prev).days <= 7:  # 允许最多相差7天，减少API调用
-                                end = current
-                            else:
-                                # 添加当前范围并开始新范围
-                                date_ranges.append((start, end))
-                                start = current
-                                end = current
-                        
-                        # 添加最后一个范围
-                        date_ranges.append((start, end))
-                    
-                    # 对每个日期范围获取数据
-                    for start_date, end_date in date_ranges:
-                        start_str = start_date.strftime("%Y%m%d")
-                        end_str = end_date.strftime("%Y%m%d")
-                        
-                        logger.info(f"获取股票 {symbol} 从 {start_str} 到 {end_str} 的数据")
-                        
-                        try:
-                            data = fetch_function(symbol, start_str, end_str)
-                            
-                            # 检查返回的数据是否为None或空
-                            if data is None or data.empty:
-                                logger.warning(f"获取股票 {symbol} 从 {start_str} 到 {end_str} 的数据为空，跳过保存")
-                                continue
-                                
-                            save_function(data, symbol)
-                            logger.info(f"股票 {symbol} 从 {start_str} 到 {end_str} 的数据更新完成")
-                        except Exception as e:
-                            logger.error(f"更新股票 {symbol} 从 {start_str} 到 {end_str} 的数据出错: {e}")
-                            continue  # 继续处理下一个日期范围
-                    
-                    logger.info(f"股票 {symbol} 所有缺失数据更新完成")
-                except Exception as e:
+            except Exception as e:
+                if table_model == IndexDailyData:
+                    logger.error(f"更新指数 {symbol} 数据出错: {e}")
+                else:
                     logger.error(f"更新股票 {symbol} 数据出错: {e}")
     finally:
         db.close()

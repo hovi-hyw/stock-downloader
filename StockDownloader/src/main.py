@@ -21,6 +21,7 @@ from .tasks.download_stock_task import download_all_stock_data, download_stock_t
 from .services.data_fetcher import DataFetcher
 from .services.data_saver import DataSaver
 from .tasks.scheduled_tasks import start_scheduled_tasks
+from .tasks.complete_data_task import run_complete_data_task
 from .utils.db_utils import initialize_database_if_needed
 
 
@@ -68,7 +69,7 @@ def parse_args():
     parser.add_argument(
         "--mode", 
         type=int, 
-        choices=range(1, 8),
+        choices=range(1, 9),
         help="运行模式：\n"
              "1：只下载指数日线数据\n"
              "2：只下载股票日线数据\n"
@@ -76,7 +77,8 @@ def parse_args():
              "4：只更新股票日线数据\n"
              "5：只下载股票和指数日线数据\n"
              "6：只更新股票和指数日线数据\n"
-             "7：更新stock_info以及index_info表"
+             "7：更新stock_info以及index_info表\n"
+             "8：补全特定股票或指数的历史数据"
     )
     
     return parser.parse_args()
@@ -153,6 +155,8 @@ def main():
             logger.info("股票和指数日线数据更新完成")
         elif args.mode == 7:  # 更新stock_info以及index_info表
             update_stock_and_index_info()
+        elif args.mode == 8:  # 补全特定股票或指数的历史数据
+            run_complete_data_task()
         
         # 执行完特定任务后退出
         sys.exit(0)
