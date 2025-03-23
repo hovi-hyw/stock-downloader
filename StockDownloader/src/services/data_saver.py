@@ -229,7 +229,6 @@ class DataSaver:
                 if existing_record:
                     if row_date > existing_record.date:
                         existing_record.open = row["开盘"]
-                        existing_record.name = index_name
                         existing_record.close = row["收盘"]
                         existing_record.high = row["最高"]
                         existing_record.low = row["最低"]
@@ -243,7 +242,6 @@ class DataSaver:
                 else:
                     db.add(IndexDailyData(
                         symbol=symbol,
-                        name=index_name,
                         date=row_date,
                         open=row["开盘"],
                         close=row["收盘"],
