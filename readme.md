@@ -8,6 +8,7 @@
 
 *   下载股票日线数据
 *   下载指数日线数据
+*   计算并存储技术指标数据
 *   存储数据到 PostgreSQL 数据库
 *   支持数据可视化与分析系统
 
@@ -117,6 +118,31 @@
 | change_rate | Float | 涨跌幅 |
 | change_amount | Float | 涨跌额 |
 | turnover_rate | Float | 换手率 |
+
+### 技术指标表 (technical_indicators)
+
+| 字段名 | 类型 | 描述 |
+| --- | --- | --- |
+| symbol | String | 股票代码 (主键之一) |
+| date | Date | 日期 (主键之一) |
+| ma5 | Float | 5日移动平均线 |
+| ma10 | Float | 10日移动平均线 |
+| ma20 | Float | 20日移动平均线 |
+| ma30 | Float | 30日移动平均线 |
+| ma60 | Float | 60日移动平均线 |
+| ma120 | Float | 120日移动平均线 |
+| ma250 | Float | 250日移动平均线 |
+| ema12 | Float | 12日指数移动平均线 |
+| ema26 | Float | 26日指数移动平均线 |
+| dif | Float | MACD差离值 |
+| dea | Float | MACD平滑值 |
+| macd | Float | MACD柱状值 |
+| k | Float | KDJ指标K值 |
+| d | Float | KDJ指标D值 |
+| j | Float | KDJ指标J值 |
+| rsi6 | Float | 6日相对强弱指标 |
+| rsi12 | Float | 12日相对强弱指标 |
+| rsi24 | Float | 24日相对强弱指标 |
 
 ## 贡献
 

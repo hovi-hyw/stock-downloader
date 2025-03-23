@@ -185,7 +185,6 @@ def run_scheduled_tasks():
         logger.info("开始执行定时数据下载任务...")
         download_all_stock_data()
         download_all_index_data()
-        update_technical_indicators()  # 新增：更新技术指标
         logger.info("定时数据下载任务执行完成，等待下次执行...")
         time.sleep(86400)  # 每天执行一次
 ```
@@ -260,6 +259,31 @@ def run_scheduled_tasks():
 需要扩展现有数据库模型，添加以下表：
 
 1. **技术指标表**：存储预计算的技术指标
+   ```
+   CREATE TABLE technical_indicators (
+       symbol VARCHAR(20) NOT NULL,
+       date DATE NOT NULL,
+       ma5 FLOAT,
+       ma10 FLOAT,
+       ma20 FLOAT,
+       ma30 FLOAT,
+       ma60 FLOAT,
+       ma120 FLOAT,
+       ma250 FLOAT,
+       ema12 FLOAT,
+       ema26 FLOAT,
+       dif FLOAT,
+       dea FLOAT,
+       macd FLOAT,
+       k FLOAT,
+       d FLOAT,
+       j FLOAT,
+       rsi6 FLOAT,
+       rsi12 FLOAT,
+       rsi24 FLOAT,
+       PRIMARY KEY (symbol, date)
+   );
+   ```
 2. **策略表**：存储策略定义和参数
 3. **策略结果表**：存储策略运行结果
 4. **用户表**（可选）：存储用户信息和偏好设置
