@@ -175,7 +175,11 @@ def update_stock_data():
     saver = DataSaver()
 
     # 更新股票数据
-    stock_list_file = os.path.join(os.getcwd(), "cache", "stock_list250317.csv")
+    cache_dir = os.path.join(os.getcwd(), "cache")
+    # 确保缓存目录存在
+    from ..utils.file_utils import ensure_directory_exists
+    ensure_directory_exists(cache_dir)
+    stock_list_file = os.path.join(cache_dir, "stock_list.csv")
     
     # 直接检查文件是否存在，不再检查文件的有效期
     if os.path.exists(stock_list_file):
@@ -211,7 +215,11 @@ def update_index_data():
     saver = DataSaver()
 
     # 更新指数数据
-    index_list_file = os.path.join(os.getcwd(), "cache", "index_list.csv")
+    cache_dir = os.path.join(os.getcwd(), "cache")
+    # 确保缓存目录存在
+    from ..utils.file_utils import ensure_directory_exists
+    ensure_directory_exists(cache_dir)
+    index_list_file = os.path.join(cache_dir, "index_list.csv")
     
     # 直接检查文件是否存在，不再检查文件的有效期
     if os.path.exists(index_list_file):
@@ -246,7 +254,11 @@ def update_all_data():
     saver = DataSaver()
 
     # 更新股票数据
-    stock_list_file = os.path.join(os.getcwd(), "cache", "stock_list250317.csv")
+    cache_dir = os.path.join(os.getcwd(), "cache")
+    # 确保缓存目录存在
+    from ..utils.file_utils import ensure_directory_exists
+    ensure_directory_exists(cache_dir)
+    stock_list_file = os.path.join(cache_dir, "stock_list.csv")
     
     # 直接检查文件是否存在，不再检查文件的有效期
     if os.path.exists(stock_list_file):
@@ -269,7 +281,11 @@ def update_all_data():
     )
 
     # 更新指数数据
-    index_list_file = os.path.join(os.getcwd(), "cache", "index_list.csv")
+    cache_dir = os.path.join(os.getcwd(), "cache")
+    # 确保缓存目录存在
+    from ..utils.file_utils import ensure_directory_exists
+    ensure_directory_exists(cache_dir)
+    index_list_file = os.path.join(cache_dir, "index_list.csv")
     
     # 直接检查文件是否存在，不再检查文件的有效期
     if os.path.exists(index_list_file):

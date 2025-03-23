@@ -37,8 +37,10 @@ class Settings:
     PROJECT_ROOT = PROJECT_ROOT
 
     # 其他路径配置(使用绝对路径)
-    CACHE_PATH = os.path.join(PROJECT_ROOT, os.getenv("CACHE_PATH", "cache"))
-    LOG_FILE = os.path.join(PROJECT_ROOT, os.getenv("LOG_FILE", "logs/stock_insight.log"))
+    # 使用项目根目录的上一级目录作为基础路径，确保文件保存在D:\codes\Pycharm\stock-downloader
+    BASE_DIR = os.path.dirname(PROJECT_ROOT)
+    CACHE_PATH = os.path.join(BASE_DIR, os.getenv("CACHE_PATH", "cache"))
+    LOG_FILE = os.path.join(BASE_DIR, os.getenv("LOG_FILE", "logs/stock_insight.log"))
 
     # 数据库配置
     DATABASE_URL = os.getenv("DATABASE_URL")

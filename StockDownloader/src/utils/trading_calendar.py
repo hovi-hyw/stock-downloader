@@ -57,4 +57,7 @@ def get_stock_list_filepath_with_datetime():
         str: 带有当前日期时间的股票列表文件完整路径。
     """
     filename = get_stock_list_filename_with_datetime()
+    from .file_utils import ensure_directory_exists
+    # 确保缓存目录存在
+    ensure_directory_exists(config.CACHE_PATH)
     return os.path.join(config.CACHE_PATH, filename)

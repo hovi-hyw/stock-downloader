@@ -18,8 +18,11 @@ def get_caller_name():
 
 def get_logger():
     caller_name = get_caller_name()
-    date_prefix = datetime.now().strftime("%Y%m%d")
-    log_filename = f"{date_prefix}_{caller_name}.log"
+    # 使用更详细的日期格式，确保日志文件名主要基于运行日期
+    date_prefix = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # 修改日志文件名格式，以日期为主要部分，模块名为次要部分
+    log_filename = f"log_{date_prefix}_{caller_name}.log"
+    # 使用config.LOG_FILE中的目录，但文件名使用动态生成的
     log_filepath = os.path.join(os.path.dirname(config.LOG_FILE), log_filename)
 
     # 确保日志目录存在

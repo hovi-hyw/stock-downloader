@@ -36,7 +36,10 @@ def download_stock_list_task():
         saver.save_stock_list_to_csv(stock_list, file_path)
         
         # 同时保存一份到标准位置，以便其他功能使用
-        standard_path = os.path.join(config.CACHE_PATH, "stock_list250317.csv")
+        from ..utils.file_utils import ensure_directory_exists
+        # 确保缓存目录存在
+        ensure_directory_exists(config.CACHE_PATH)
+        standard_path = os.path.join(config.CACHE_PATH, "stock_list.csv")
         saver.save_stock_list_to_csv(stock_list, standard_path)
         
         logger.info(f"股票列表下载任务执行完成，已保存到 {file_path}")

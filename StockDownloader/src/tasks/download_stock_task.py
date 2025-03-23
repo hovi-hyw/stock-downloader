@@ -47,9 +47,11 @@ def download_all_stock_data(update_only=False):
     fetcher = DataFetcher()
     saver = DataSaver()
     # 获取股票列表
+    from ..utils.file_utils import check_file_validity, ensure_directory_exists
+    # 确保缓存目录存在
+    ensure_directory_exists(config.CACHE_PATH)
     stock_list_file = config.CACHE_PATH + "/stock_list_latest.csv"
     max_age = config.MAX_CSV_AGE_DAYS
-    from ..utils.file_utils import check_file_validity
     if check_file_validity(stock_list_file, max_age):
         logger.info("从缓存读取股票列表")
         stock_list = pd.read_csv(stock_list_file)
