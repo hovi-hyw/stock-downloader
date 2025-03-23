@@ -140,11 +140,15 @@ def main():
         elif args.mode == 5:  # 只下载股票和指数日线数据
             logger.info("开始下载股票和指数日线数据...")
             download_all_stock_data()
+            logger.info("股票日线数据下载完成，等待1分钟后开始下载指数日线数据...")
+            time.sleep(60)  # 等待1分钟
             download_all_index_data()
             logger.info("股票和指数日线数据下载完成")
         elif args.mode == 6:  # 只更新股票和指数日线数据
             logger.info("开始更新股票和指数日线数据...")
             download_all_stock_data(update_only=True)
+            logger.info("股票日线数据更新完成，等待1分钟后开始更新指数日线数据...")
+            time.sleep(60)  # 等待1分钟
             download_all_index_data(update_only=True)
             logger.info("股票和指数日线数据更新完成")
         elif args.mode == 7:  # 更新stock_info以及index_info表
