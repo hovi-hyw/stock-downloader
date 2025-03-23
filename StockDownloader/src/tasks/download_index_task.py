@@ -47,9 +47,12 @@ def download_index_data(symbol: str, name: str):
         logger.error(f"处理指数 {formatted_symbol}({name}) 时出错: {e}")
 
 
-def download_all_index_data():
+def download_all_index_data(update_only=False):
     """
     下载所有指数的日线数据，并保存到数据库。
+    
+    Args:
+        update_only (bool, optional): 是否只更新最新数据。默认为False，表示下载全部历史数据。
     """
     fetcher = DataFetcher()
     saver = DataSaver()
@@ -71,9 +74,16 @@ def download_all_index_data():
     saver.save_index_info_to_db(index_list)
 
     # 下载指数日数据并保存到数据库
-    for _, row in index_list.iterrows():
-        symbol = row["代码"]
-        name = row["名称"]
-        download_index_data(symbol, name)
+    if update_only:
+        # 如果只更新最新数据，则调用update_index_data函数
+        from .update_data_task import update_index_data
+        update_index_data()
+        logger.info("指数数据增量更新任务完成")
+    else:
+        # 否则下载全部历史数据
+        for _, row in index_list.iterrows():
+            symbol = row["代码"]
+            name = row["名称"]
+            download_index_data(symbol, name)
 
-    logger.info("所有指数数据下载任务完成")
+        logger.info("所有指数数据下载任务完成")
